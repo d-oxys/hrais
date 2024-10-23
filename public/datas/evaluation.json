@@ -1,0 +1,56 @@
+{
+  "work-motivation": {
+    "score1": "The employee displays unmotivated behavior and lacks enthusiasm throughout almost the entire working hours.",
+    "score2": "The employee shows somewhat unmotivated behavior, occasionally demonstrating enthusiasm during some parts of the working hours.",
+    "score3": "The employee exhibits fairly motivated behavior and has the spirit to perform tasks during most of the working hours.",
+    "score4": "The employee demonstrates motivated behavior, showing high spirits when performing tasks for the majority of the working hours."
+  },
+  "understanding-of-instruction": {
+    "score1": "The employee often fails to comprehend the given instructions, resulting in incorrect task completion and numerous errors.",
+    "score2": "The employee sometimes struggles to understand the provided instructions, leading to imprecise task execution.",
+    "score3": "The employee is reasonably capable of understanding the given instructions, completing tasks fairly accurately with minimal errors.",
+    "score4": "The employee adeptly comprehends and follows the given instructions, executing tasks correctly and precisely as instructed."
+  },
+  "work-initiatives": {
+    "score1": "The employee displays unmotivated behavior and lacks enthusiasm throughout almost the entire working hours.",
+    "score2": "The employee shows somewhat unmotivated behavior, occasionally demonstrating enthusiasm during some parts of the working hours.",
+    "score3": "The employee exhibits fairly motivated behavior and has the spirit to perform tasks during most of the working hours.",
+    "score4": "The employee demonstrates motivated behavior, showing high spirits when performing tasks for the majority of the working hours."
+  },
+  "work-rhythm": {
+    "score1": "The employee works at an extremely slow pace, consistently late in meeting deadlines.",
+    "score2": "The employee works at a moderately fast pace, occasionally falling behind in meeting deadlines.",
+    "score3": "The employee works at a fast pace and never misses deadlines.",
+    "score4": "The employee works at an exceptionally fast pace, often completing tasks well before the deadline."
+  },
+  "disciplinary": {
+    "score1": "The employee has low discipline levels, frequently arriving late or being absent",
+    "score2": "The employee maintains a moderate level of discipline, seldom being late and rarely absent.",
+    "score3": "The employee demonstrates a satisfactory level of discipline, consistently being punctual and infrequently absent.",
+    "score4": "The employee exhibits good discipline, always being punctual and never being absent."
+  },
+  "obedience": {
+    "score1": "The employee displays minimal compliance with company rules and regulations, frequently committing minor violations.",
+    "score2": "The employee exhibits insufficient compliance with company rules and regulations, occasionally committing minor violations.",
+    "score3": "The employee demonstrates satisfactory compliance with company rules and regulations but has committed minor violations in the past.",
+    "score4": "The employee shows good compliance with company rules and regulations, having never committed any violations."
+  },
+  "work-performance": {
+    "score1": "The employee struggles to achieve the specified targets, both in terms of quality and quantity (below 55%).",
+    "score2": "The employee achieves a few of the specified targets, both in terms of quality and quantity (around 60%-70%).",
+    "score3": "The employee fairly successfully achieves the specified targets, both in terms of quality and quantity (around 75%-85%).",
+    "score4": "The employee consistently meets the specified targets, satisfying both in terms of quality and quantity (around 90%-100%)."
+  },
+  "team-work": {
+    "score1": "The employee finds it difficult to collaborate with others: prefers working alone, unwilling to share or delegate tasks, unwilling to assist, tends to have issues when working with others.",
+    "score2": "The employee is reasonably capable of collaborating with others: willing to help when asked.",
+    "score3": "The employee is fairly capable of collaborating with others: willing to help others without being asked.",
+    "score4": "The employee can collaborate well with others: responsive to the needs of others and willingly assists others without being asked."
+  },
+  "social-relations": {
+    "score1": "The employee tends to have issues when building relationships with others: not friendly/ behaves rudely (such as slamming objects)/ uses impolite language/ speaks bluntly.",
+    "score2": "The employee is less adept at building relationships with others: tends to be solitary/ reserved/ not friendly.",
+    "score3": "The employee is fairly capable of building relationships with others: reasonably friendly/ willing to engage in casual conversations/ shows interest in building relationships.",
+    "score4": "The employee is adept at building relationships with others: friendly/ sociable/ willing to compromise and be tolerant/ willing to share with others."
+  }
+}

@@ -1,0 +1,23 @@
+.table-company {
+  :global {
+    .ant-table-tbody > tr > td:first-child {
+      border-start-start-radius: 18px;
+      border-end-start-radius: 18px;
+    }
+
+    .ant-table-cell {
+      padding: 0 !important;
+    }
+
+    .ant-table-tbody > tr > td {
+      min-height: 70px;
+      border-right: 1px solid #f0f0f0;
+      border-left: 1px solid #f0f0f0;
+    }
+
+    .ant-table-expanded-row > .ant-table-cell {
+      background-color: rgb(238, 238, 238) !important;
+      border: none !important;
+    }
+  }
+}

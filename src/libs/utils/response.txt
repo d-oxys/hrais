@@ -1,0 +1,241 @@
+berikut ini adalah data data yang saya simpan di localStorage:
+formEmployeeData:
+{
+    "fullname": "Mochamad Ichsan Nurjaman R",
+    "nip": "21552011361",
+    "phone_number": "081295449361",
+    "Companies": 1,
+    "BusinessUnits": "dua-puluh-tiga",
+    "Divisions": "shared-operation",
+    "Departments": "ict",
+    "Sections": "ict",
+    "Jobroles": "php-developer-associate",
+    "level": "1A",
+    "supervisor": "ICHSAN"
+}
+
+formAddressIdentityCardData
+{
+    "identity_number": "3171234567890123",
+    "address": "JL. PASTI CEPAT A7/66",
+    "province_id": "DKI JAKARTA",
+    "city_id": "JAKARTA BARAT",
+    "district_id": "KALIDERES",
+    "subdistrict_id": "PEGADUNGAN",
+    "rt": "007",
+    "rw": "008",
+    "is_according_ktp": 1,
+    "gender": "PEREMPUAN",
+    "weight": "70",
+    "height": "190",
+    "blood_type": "B",
+    "placeofbirth": "JAKARTA",
+    "dateofbirth": "1986-02-18",
+    "religion": "ISLAM",
+    "nationality": "WNI",
+    "biological_mother_dob": "2024-09-08",
+    "biological_father_dob": "2024-09-08"
+}
+
+formContactFamily
+{
+    "contact_personal_email": "mochamadichsannr@gmail.com",
+    "contact_emergency_number": "089123321",
+    "contact_relationship": "SOHIB",
+    "contact_name_of_person": "Mochamad Ichsan Nurjaman R",
+    "bank": "1",
+    "bank_account": "1222445889",
++    "marital_name": "Marital",
+    "marital_dob": "2024-09-03T17:00:00.000Z",
+    "status_marital": "STATUS",
+    "biological_father_name": "Biological Father",
+    "biological_father_dob": "2024-09-16",
+    "biological_mother_name": "Biological Mother",
+    "biological_mother_dob": "2024-09-06",
+    "dateofbirth": "2024-09-08"
+}
+
+formDriverLicenseData
+{
+    "driver_license_type": [
+        "1",
+        "2"
+    ],
+    "driver_license_number": [
+        "1",
+        "2"
+    ],
+    "family_card_number": "3",
+    "tax_name": "Tax Name",
+    "tax_number": "1",
+    "bpjs_kesehatan_number": "11",
+    "bpjs_ketenagakerjaan_number": "12",
+    "last_education": "Last Education",
+    "major": "Major",
+    "institution": "Institution Name",
+    "numOfDriverLicense": [
+        1,
+        2,
+        3
+    ]
+}
+
+self_photo: data:image/jpeg;base64,...
+fullbody_photo: data:image/jpeg;base64,...
+identity_card: data:image/jpeg;base64,...
+family_card: data:image/jpeg;base64,...
+tax_card: data:image/jpeg;base64,...
+bpjs_card: data:image/jpeg;base64,...
+bpjs_k_card?: data:image/jpeg;base64,...
+education_certificate?: data:image/jpeg;base64,...
+transcripts: data:image/jpeg;base64,...
+verklaring?: data:image/jpeg;base64,...
+training?: data:image/jpeg;base64,...
+health_letter?: data:image/jpeg;base64,...
+
+
+api:
+POST
+document preparation
+https://apps-api-dev.duapuluhtiga.com/api/v1/profile/document/id_user
+﻿
+Authorization
+Bearer Token
+Request Headers
+Accept
+application/json
+Body
+form-data
+
+self_photo: file
+identity_card: file
+family_card: file
+tax_card: file
+bpjs_card: file
+bpjs_k_card: file
+education_certificate: file
+transcripts: file
+verklaring: file
+training: file
+health_letter: file
+full_name: text
+phone_number: text
+nip: text
+identity_number: text
+addressCard: text
+noRtCard: text
+noRwCard: text
+provinceCard: text
+cityCard: text
+districtCard: text
+subdistrictCard: text
+sameCard: text
+addressDom: text
+noRtDom: text
+noRwDom: text
+provinceDom: text
+cityDom: text
+districtDom: text
+subdistrictDom: text
+gender: text
+weight: text
+height: text
+blood_type: text
+place_birth: text
+date_birth: text
+religion: text
+nationality: text
+father_name: text
+father_date_birth: text
+mother_name: text
+mother_date_birth: text
+marital_status: text
+partner_name: text
+partner_card: text
+partner_place_birth: text
+partner_date_birth: text
+number_children: text
+email_personal: text
+emergency_number: text
+relationship_emergency: text
+relationship_name_emergency: text
+bank_name: text
+bank_number: text
+driver_license_type1: text
+driver_license_number1: text
+driver_license_type2: text
+driver_license_number2: text
+family_card_number: text
+tax_card_name: text
+tax_card_number: text
+bpjs_number: text
+bpjs_k_number: text
+last_education: text
+major: text
+institution_name: text
+
+
+{
+  "meta": {
+    "code": "",
+    "status": "",
+    "message": ""
+  },
+  "result": {
+    "data": [
+      {
+        "company": {
+          "id": "",
+          "name": "",
+          "status": "",
+          "businessUnits": [
+            {
+              "businessUnit": {
+                "idBusinessUnit": "",
+                "nameBusinessUnit": "",
+                "slug": "",
+                "companyId": ""
+              },
+              "divisions": [
+                {
+                  "division": {
+                    "idDivision": "",
+                    "nameDivision": "",
+                    "slug": ""
+                  },
+                  "departments": [
+                    {
+                      "department": {
+                        "idDepartment": "",
+                        "nameDepartment": "",
+                        "slug": ""
+                      },
+                      "sections": [
+                        {
+                          "section": {
+                            "idSection": "",
+                            "nameSection": "",
+                            "slug": ""
+                          },
+                          "jobroles": [
+                            {
+                              "jobrole": {
+                                "idJobrole": "",
+                                "nameJobrole": "",
+                                "slug": ""
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

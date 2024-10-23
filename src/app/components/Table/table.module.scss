@@ -1,0 +1,15 @@
+.table-content {
+  :global {
+    .ant-table {
+      border-radius: 0 !important;
+      background-color: transparent;
+      border: none;
+    }
+
+    .ant-table-cell {
+      background-color: #fff !important;
+      border-bottom: 5px solid #f0f0f0 !important;
+      border-top: 5px solid #f0f0f0 !important;
+    }
+  }
+}

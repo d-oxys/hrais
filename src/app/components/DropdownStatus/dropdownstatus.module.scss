@@ -1,0 +1,25 @@
+.dropdown-status {
+  :global {
+    .ant-select {
+      width: 120px !important;
+      outline: none;
+    }
+
+    .ant-select-selector {
+      border-radius: 24px;
+    }
+
+    .not-active > .ant-select-selector {
+      background-color: var(
+        --negative-color-25,
+        rgba(227, 67, 67, 0.25)
+      ) !important;
+      color: var(--Negative-Color, #e34343) !important;
+    }
+
+    .active > .ant-select-selector {
+      background-color: rgba(1, 160, 55, 0.25) !important;
+      color: var(--Positive-Color, #01a037) !important;
+    }
+  }
+}

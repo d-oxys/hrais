@@ -1,0 +1,46 @@
+/* DashboardLayout.module.css */
+
+.body {
+  margin: 0;
+}
+
+.logo {
+  height: 32px;
+  // background: rgba(255, 255, 255, 0.2);
+}
+
+.trigger {
+  color: white;
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+.menu-list {
+  :global {
+    .ant-menu-item.bg-white,
+    .ant-menu-submenu.ant-menu-submenu-inline.bg-white,
+    .ant-menu-submenu-title {
+      background-color: transparent !important;
+      margin: 0;
+      border-radius: 0px var(--Corner-Rounding-Corner-Rounding-3, 25px) var(--Corner-Rounding-Corner-Rounding-3, 25px) 0px;
+    }
+
+    .ant-menu-item.ant-menu-item-selected.bg-white {
+      background: var(--primary-color-25, rgba(56, 122, 255, 0.25)) !important;
+      color: var(--Primary-Color, #387AFF) !important;
+      border-radius: 0px var(--Corner-Rounding-Corner-Rounding-3, 25px) var(--Corner-Rounding-Corner-Rounding-3, 25px) 0px;
+    }
+
+    .ant-menu-item.ant-menu-item-active.bg-white,
+    .ant-menu-submenu.ant-menu-submenu-inline.ant-menu-submenu-active.bg-white > .ant-menu-submenu-title {
+      color: var(--Primary-Color, #387AFF) !important;
+    }
+  }
+}

@@ -1,0 +1,54 @@
+.loginpage {
+  background-image: url("/assets/images/background-login.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 100svh;
+  padding: 0;
+
+  .logo {
+    width: 100%;
+    margin: auto;
+    justify-content: center;
+    position: relative;
+    display: flex;
+  }
+
+  .layout-login {
+    width: 50%;
+    height: 100svh;
+  }
+
+  .login-form {
+    background: #fff;
+    border-radius: 32px;
+    width: 50%;
+    height: 70%;
+    margin: auto;
+    margin-top: 50px;
+    padding: 50px;
+  }
+
+  .item-form-login {
+    margin-top: 50px;
+  }
+
+  :global {
+    .ant-input {
+      padding: 16px 12px 4px 11px;
+    }
+    
+    .ant-select .ant-select-selector {
+      padding: 16px 10px 4px 11px;
+    }
+    
+    .ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+      padding: 16px 10px 4px 11px;
+      height: 48px;
+    }
+    
+    .ant-select-single .ant-select-selector .ant-select-selection-search {
+      top: 16px;
+    }
+  }
+}

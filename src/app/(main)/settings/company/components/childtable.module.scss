@@ -1,0 +1,14 @@
+.table-content-child {
+  :global {
+    .ant-table {
+      border-radius: 0 !important;
+      background-color: transparent;
+      border: none;
+    }
+
+    .ant-table-expanded-row > .ant-table-cell {
+      background-color: rgb(238, 238, 238) !important;
+      border: none !important;
+    }
+  }
+}

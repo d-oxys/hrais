@@ -1,0 +1,15 @@
+.attend-problem-tab {
+  :global {
+    .ant-tabs-nav {
+      width: 100% !important;
+
+      .ant-tabs-tab {
+        padding: 5px 24px 5px 0px !important;
+      }
+    }
+
+    .ant-tabs-content-holder {
+      display: none !important;
+    }
+  }
+}

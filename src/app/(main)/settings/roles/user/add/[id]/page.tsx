@@ -1,0 +1,71 @@
+"use client";
+import { Breadcrumb } from "antd";
+import FormAddUser from "../../components/FormAddUser";
+import { useParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { usePermissions } from "@root/libs/contexts/PermissionsContext";
+import { useRouter } from "next/navigation";
+
+const UpdateUserPage = () => {
+  const params = useParams();
+  const [isLoading, setIsLoading] = useState(false);
+  const permissions = usePermissions();
+  const router = useRouter();
+
+  const breadcrumb = [
+    {
+      href: "#",
+      title: "Settings",
+    },
+    {
+      href: "/settings/roles/user/",
+      title: "roles",
+    },
+    {
+      href: "/settings/roles/user/edit/" + params.id,
+      title: "Update Roles",
+    },
+  ];
+
+  // useEffect(() => {
+  //   if (!permissions) {
+  //     return;
+  //   }
+
+  //   if (
+  //     !permissions["Settings"] ||
+  //     !permissions["Settings"]["Module"] ||
+  //     permissions["Settings"]["Module"]["update"] !== 1
+  //   ) {
+  //     router.replace("/unauthorized");
+  //   } else {
+  //     setIsLoading(false);
+  //   }
+  // }, [permissions, router]);
+
+  if (isLoading) {
+    return null;
+  }
+
+  return (
+    <Suspense>
+      <div>
+        <div className="mb-5">
+          <div className="flex justify-between">
+            <div>
+              <p className="font-bold text-lg">Update Roles</p>
+              <Breadcrumb items={breadcrumb} />
+            </div>
+          </div>
+          <div className="mt-4 bg-white rounded-xl p-5">
+            <div className="font-bold text-primary mb-5">Roles Data</div>
+            <div className="border-2 border-primary mb-4"></div>
+            <FormAddUser id={params.id.toString()} />
+          </div>
+        </div>
+      </div>
+    </Suspense>
+  );
+};
+
+export default UpdateUserPage;

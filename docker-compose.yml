@@ -1,0 +1,29 @@
+version: "3"
+services:
+  app:
+    build: .
+    #image: hris-apps
+    container_name: hris-apps
+    restart: unless-stopped
+    tty: true
+    networks:
+      - apps
+    volumes:
+      - ./:/app
+  webserver:
+    image: nginx:alpine
+    container_name: servhris
+    restart: unless-stopped
+    tty: true
+    ports: 
+      - "3003:3000"
+    networks:
+      - apps
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+networks:
+  apps:
+    driver: bridge
+
+  
+    

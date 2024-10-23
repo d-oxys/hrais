@@ -1,0 +1,29 @@
+.search-input {
+  :global {
+    .ant-input-affix-wrapper.ant-input-affix-wrapper-lg.ant-input-outlined {
+      border-start-start-radius: 20px;
+      border-end-start-radius: 20px;
+      background: #F5F5F5;
+      border: none;
+      outline: none;
+
+      &.ant-input-affix-wrapper-focused {
+        outline: none;
+        border: none;
+        box-shadow: none;
+      }
+    }
+
+    .ant-input-group-addon > button.ant-btn.ant-btn-default.ant-btn-lg.ant-input-search-button {
+      border-start-end-radius: 20px;
+      border-end-end-radius: 20px;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.05) 100%), #F5F5F5;
+      color: #5C6880;
+      padding: 0 20px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      height: 37px;
+    }
+  }
+}
