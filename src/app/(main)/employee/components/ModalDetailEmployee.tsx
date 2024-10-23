@@ -188,10 +188,10 @@ const ModalDetailEmployee = (props: ModalDetailEmployeeProps) => {
           <Button className="rounded-full ml-3">Edit</Button>
         </div>
         <div>
-          <DropdownStatus
+          {/* <DropdownStatus
             initialValue={employee.personal_data.status}
             id={employee.employee.id}
-          />
+          /> */}
         </div>
       </div>
     </Modal>

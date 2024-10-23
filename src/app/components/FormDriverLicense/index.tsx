@@ -37,9 +37,9 @@ const FormDriverLicense = (props: FormDriverLicenseProps) => {
   }: {
     driverlicensetype: DriverLicenseTypeState[];
   } = useAppSelector((state) => state.masterdata);
-  const {
-    form: { employeeData },
-  } = useAppSelector((state) => state.employee);
+  // const {
+  //   form: { employeeData },
+  // } = useAppSelector((state) => state.employee);
 
   const removeRow = useCallback(
     (type: string, index: number) => {
@@ -153,9 +153,9 @@ const FormDriverLicense = (props: FormDriverLicenseProps) => {
       JSON.stringify({ ...values, numOfDriverLicense })
     );
 
-    const currentAllData = { ...employeeData, ...values };
+    // const currentAllData = { ...employeeData, ...values };
     await dispatch(employeeActions.setFormEmployeeData(values));
-    dispatch(updateEmployeeData(currentAllData));
+    // dispatch(updateEmployeeData(currentAllData));
 
     await handleSubmit(new Event("submit"));
 

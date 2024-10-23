@@ -68,9 +68,9 @@ const FormAddressIdentityCard = (props: FormAddressIdentityCard) => {
     bloodtype: { name: string }[];
     religion: ReligionState[];
   } = useAppSelector((state) => state.masterdata);
-  const { form: formEmployee }: { form: any } = useAppSelector(
-    (state) => state.employee
-  );
+  // const { form: formEmployee }: { form: any } = useAppSelector(
+  //   (state) => state.employee
+  // );
 
   const [files, setFiles] = useState<{ [key: string]: UploadFile | null }>({});
   const [ocrText, setOcrText] = useState("");
