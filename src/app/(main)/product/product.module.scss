@@ -1,0 +1,20 @@
+// styles.scss
+
+// Gaya untuk baris yang diperluas
+.ant-table-row-expanded {
+  position: relative;
+  background-color: #f9f9f9; // Warna latar belakang untuk baris yang diperluas
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -15px; // Menyesuaikan posisi untuk efek siku-siku
+    top: 50%;
+    width: 15px; // Lebar siku-siku
+    height: 100%; // Tinggi sama dengan baris
+    border-left: 2px solid #000; // Warna dan ketebalan garis
+    border-bottom: 2px solid #000; // Warna dan ketebalan garis
+    transform: translateY(-50%) rotate(45deg); // Mengubah posisi dan rotasi
+    z-index: 1; // Pastikan berada di atas
+  }
+}

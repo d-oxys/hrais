@@ -1,10 +1,6 @@
-// layouts/ProductLayout.tsx
 'use client';
-import { Layout, Menu } from 'antd';
 import { useRouter, usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
-
-const { Header, Content } = Layout;
 
 interface ProductLayoutProps {
   children: ReactNode;
@@ -19,24 +15,25 @@ const ProductLayout: React.FC<ProductLayoutProps> = ({ children }) => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Header>
-        <Menu
-          theme='dark'
-          mode='horizontal'
-          defaultSelectedKeys={['product-performance']}
-          selectedKeys={[pathname.replace('/product/', '') || 'product-performance']}
-          onClick={(e) => handleMenuClick(e.key)}
-          items={[
-            { label: 'Product Performance', key: 'product-performance' },
-            { label: 'Group Performance', key: 'group-performance' },
-            { label: 'Category Performance', key: 'category-performance' },
-            { label: 'Sub Category Performance', key: 'sub-category-performance' },
-          ]}
-        />
-      </Header>
-      <Content style={{ padding: '24px', background: '#fff' }}>{children}</Content>
-    </Layout>
+    <div className='min-h-screen flex flex-col'>
+      <header className='bg-gray-800 rounded-t-md'>
+        <nav className='flex justify-start py-0.5 mx-0.5 space-x-8'>
+          <button className={`${pathname === '/product/product-performance' ? 'bg-white text-black font-bold' : 'text-white'} rounded-t-md transition p-4`} onClick={() => handleMenuClick('product-performance')}>
+            Product Performance
+          </button>
+          <button className={`${pathname === '/product/group-performance' ? 'bg-white text-black font-bold' : 'text-white'} rounded-t-md transition p-4`} onClick={() => handleMenuClick('group-performance')}>
+            Group Performance
+          </button>
+          <button className={`${pathname === '/product/category-performance' ? 'bg-white text-black font-bold' : 'text-white'} rounded-t-md transition p-4`} onClick={() => handleMenuClick('category-performance')}>
+            Category Performance
+          </button>
+          <button className={`${pathname === '/product/sub-category-performance' ? 'bg-white text-black font-bold' : 'text-white'} rounded-t-md transition p-4`} onClick={() => handleMenuClick('sub-category-performance')}>
+            Sub Category Performance
+          </button>
+        </nav>
+      </header>
+      <main className='p-6 bg-white flex-1'>{children}</main>
+    </div>
   );
 };
 

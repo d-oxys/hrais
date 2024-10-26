@@ -1,5 +1,5 @@
-import React, { useState, Suspense, ReactNode } from 'react';
-import { Button, Col, DatePicker, Dropdown, Input, Modal, Row, Table, Select, Menu, Pagination } from 'antd';
+import React, { useState, Suspense } from 'react';
+import { Button, Col, DatePicker, Dropdown, Input, Modal, Row, Table, Select, Menu } from 'antd';
 import { FilterOutlined, SearchOutlined, DownloadOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import styles from './product.module.scss';
@@ -27,6 +27,8 @@ interface ProductTableComponentProps {
   onFilterClick?: () => void;
   expandable?: any;
   isLoading?: boolean;
+  showFilters?: boolean;
+  showPagination?: boolean;
 }
 
 const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
@@ -54,6 +56,8 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   onFilterClick,
   expandable,
   isLoading = false,
+  showFilters = true,
+  showPagination = true,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRange, setSelectedRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
@@ -116,87 +120,93 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <Row className='mb-4 justify-between'>
-        {/* Limit Selector */}
-        <Col className='flex items-center space-x-2'>
-          <span className='text-sm'>Show</span>
-          <Select value={limit} onChange={handleLimitChange} className='w-20'>
-            {limitOptions.map((option) => (
-              <Option key={option} value={option}>
-                {option}
-              </Option>
-            ))}
-          </Select>
-          <span className='text-sm'>entries</span>
-        </Col>
-
-        <Col className='flex items-center space-x-4'>
-          {/* Date Range Filter */}
-          <RangePicker
-            value={selectedRange}
-            onChange={handleDateChange}
-            className={`w-52 ${styles.rangePickerPlaceholder}`}
-            renderExtraFooter={() => (
-              <div className='my-4'>
-                <div className='flex space-x-2 mt-2'>
-                  {dateFilterOptions.slice(0, 6).map((option) => (
-                    <button key={option.value} onClick={() => quickSelect(option.value)} className='text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline'>
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                <div className='flex space-x-2 mt-2'>
-                  {dateFilterOptions.slice(6).map((option) => (
-                    <button key={option.value} onClick={() => quickSelect(option.value)} className='text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline'>
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          />
-
-          {/* Brand Filter */}
-          {brandOptions.length > 0 && (
-            <Select placeholder='Select Brand' onChange={onBrandChange} className='w-52'>
-              {brandOptions.map((brand) => (
-                <Option key={brand.value} value={brand.value}>
-                  {brand.label}
+      {showFilters && (
+        <Row className='mb-4 justify-between'>
+          <Col className='flex items-center space-x-2'>
+            <span className='text-sm'>Show</span>
+            <Select value={limit} onChange={handleLimitChange} className='w-20'>
+              {limitOptions.map((option) => (
+                <Option key={option} value={option}>
+                  {option}
                 </Option>
               ))}
             </Select>
-          )}
+            <span className='text-sm'>entries</span>
+          </Col>
 
-          {/* Filter Button */}
-          <Button icon={<FilterOutlined />} onClick={() => setIsModalVisible(true)}>
-            Filter
-          </Button>
+          <Col className='flex items-center space-x-4'>
+            <RangePicker
+              value={selectedRange}
+              onChange={handleDateChange}
+              className={`w-52 ${styles.rangePickerPlaceholder}`}
+              renderExtraFooter={() => (
+                <div className='my-4'>
+                  <div className='flex space-x-2 mt-2'>
+                    {dateFilterOptions.slice(0, 6).map((option) => (
+                      <button key={option.value} onClick={() => quickSelect(option.value)} className='text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline'>
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className='flex space-x-2 mt-2'>
+                    {dateFilterOptions.slice(6).map((option) => (
+                      <button key={option.value} onClick={() => quickSelect(option.value)} className='text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline'>
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            />
 
-          {/* Export Dropdown */}
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item key='csv' icon={<DownloadOutlined />} onClick={() => onExport && onExport('csv')}>
-                  Export as CSV
-                </Menu.Item>
-                <Menu.Item key='pdf' icon={<DownloadOutlined />} onClick={() => onExport && onExport('pdf')}>
-                  Export as PDF
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button icon={<DownloadOutlined />}>Export</Button>
-          </Dropdown>
+            {brandOptions.length > 0 && (
+              <Select placeholder='Select Brand' onChange={onBrandChange} className='w-52'>
+                {brandOptions.map((brand) => (
+                  <Option key={brand.value} value={brand.value}>
+                    {brand.label}
+                  </Option>
+                ))}
+              </Select>
+            )}
 
-          {/* Search Input */}
-          <Input placeholder='Search by Name' prefix={<SearchOutlined />} value={searchText} onChange={handleSearchChange} className='w-52' allowClear />
-        </Col>
-      </Row>
+            <Button icon={<FilterOutlined />} onClick={() => setIsModalVisible(true)}>
+              Filter
+            </Button>
 
-      {/* Table Component */}
-      <Table columns={columns} dataSource={data} loading={isLoading} expandable={expandable} pagination={pagination} />
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item key='csv' icon={<DownloadOutlined />} onClick={() => onExport && onExport('csv')}>
+                    Export as CSV
+                  </Menu.Item>
+                  <Menu.Item key='pdf' icon={<DownloadOutlined />} onClick={() => onExport && onExport('pdf')}>
+                    Export as PDF
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button icon={<DownloadOutlined />}>Export</Button>
+            </Dropdown>
 
-      {/* Filter Modal */}
+            <Input placeholder='Search by Name' prefix={<SearchOutlined />} value={searchText} onChange={handleSearchChange} className='w-52' allowClear />
+          </Col>
+        </Row>
+      )}
+
+      <Table
+        columns={columns}
+        dataSource={data}
+        loading={isLoading}
+        expandable={expandable}
+        pagination={showPagination ? pagination : false}
+        onHeaderRow={() => ({
+          style: {
+            backgroundColor: '#ffffff',
+            color: '#000000',
+          },
+        })}
+      />
+
       <Modal title='Filter Options' visible={isModalVisible} onOk={onFilterClick} onCancel={() => setIsModalVisible(false)}>
         <p>Additional Filter Options</p>
       </Modal>

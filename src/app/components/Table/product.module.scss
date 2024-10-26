@@ -1,9 +1,14 @@
-// Menyembunyikan placeholder kedua pada RangePicker
 .rangePickerPlaceholder input::placeholder {
-    text-align: center; // Menyelaraskan teks placeholder ke tengah
-  }
-  
-  .rangePickerPlaceholder input:nth-child(2)::placeholder {
-    opacity: 0; // Menyembunyikan placeholder kedua
-  }
-  
+  text-align: center;
+}
+
+.rangePickerPlaceholder input:nth-child(2)::placeholder {
+  opacity: 0;
+}
+
+/* product.module.scss */
+.table-header-white .ant-table-thead > tr > th {
+  background-color: #ffffff;
+  color: #000000;
+  border-bottom: 1px solid #e8e8e8;
+}
