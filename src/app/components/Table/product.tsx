@@ -29,6 +29,7 @@ interface ProductTableComponentProps {
   isLoading?: boolean;
   showFilters?: boolean;
   showPagination?: boolean;
+  filterContent?: React.ReactNode; // New prop for custom filter content
 }
 
 const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
@@ -58,6 +59,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   isLoading = false,
   showFilters = true,
   showPagination = true,
+  filterContent, // Receive the custom content for the filter modal
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRange, setSelectedRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
@@ -208,7 +210,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
       />
 
       <Modal title='Filter Options' visible={isModalVisible} onOk={onFilterClick} onCancel={() => setIsModalVisible(false)}>
-        <p>Additional Filter Options</p>
+        {filterContent || <p>Additional Filter Options</p>}
       </Modal>
     </Suspense>
   );

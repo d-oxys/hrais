@@ -69,3 +69,8 @@ body {
   background-color: white !important; /* Ensure all header cells have white background */
   color: black; /* Optional: set text color */
 }
+
+/* Add this CSS to your stylesheet */
+.ant-table-row-expand-icon-cell {
+  background-color: #ffffff !important;
+}

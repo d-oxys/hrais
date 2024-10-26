@@ -18,3 +18,23 @@
     z-index: 1; // Pastikan berada di atas
   }
 }
+
+.table-container {
+  position: relative;
+}
+
+.expandable-row {
+  position: relative;
+  padding: 10px;
+  border-top: 2px solid #ccc; /* Line to connect the main and expandable rows */
+  background-color: #f9f9f9; /* Background for better visibility */
+}
+
+.connector {
+  position: absolute;
+  left: 0; /* Align to the left */
+  top: -2px; /* Adjust position as necessary */
+  width: 100%;
+  height: 2px; /* Thickness of the line */
+  background-color: #ccc; /* Color of the line */
+}
