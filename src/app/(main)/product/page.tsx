@@ -1,139 +1,125 @@
 'use client';
-import React, { useState, Suspense } from 'react';
-import { Avatar, Breadcrumb, Button, Col, DatePicker, Dropdown, Input, Modal, Row, Table, TableColumnsType, Select, Pagination, Menu } from 'antd';
-import { FormOutlined, DeleteOutlined, FilterOutlined, SearchOutlined, DownloadOutlined } from '@ant-design/icons';
-import TableComponent from '@root/app/components/Table';
-import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '@root/libs/store';
-import LoadingComponent from '@root/app/components/Loading';
-
-const { RangePicker } = DatePicker;
-const { Option } = Select;
+import React, { useState } from 'react';
+import { TableColumnsType } from 'antd';
+import ProductTableComponent from '@root/app/components/Table/product';
+import dayjs from 'dayjs';
 
 interface DataType {
   key: React.Key;
-  name: string;
-  age: number;
-  address: string;
-  description: string;
-  children?: DataType[];
+  artikel: string;
+  qty: number;
+  brutto: number;
+  discount: number;
+  netto: number;
+  percentageOfSales: number;
 }
 
-const ProductPage = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [searchText, setSearchText] = useState('');
-  const [dateFilter, setDateFilter] = useState(null);
-  const [brand, setBrand] = useState(null);
-  const [pagination, setPagination] = useState({ current: 1, pageSize: 10 });
-  const route = useRouter();
-  const dispatch = useAppDispatch();
-
-  const columns: TableColumnsType<DataType> = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Age', dataIndex: 'age', key: 'age' },
-    { title: 'Address', dataIndex: 'address', key: 'address' },
+const ProductPage: React.FC = () => {
+  const originalData: DataType[] = [
     {
-      title: 'Action',
-      dataIndex: '',
-      key: 'x',
-      render: () => <a>Delete</a>,
+      key: 1,
+      artikel: 'Product A',
+      qty: 120,
+      brutto: 1200,
+      discount: 200,
+      netto: 1000,
+      percentageOfSales: 25,
+    },
+    {
+      key: 2,
+      artikel: 'Product B',
+      qty: 80,
+      brutto: 800,
+      discount: 100,
+      netto: 700,
+      percentageOfSales: 17.5,
+    },
+    {
+      key: 3,
+      artikel: 'Product C',
+      qty: 60,
+      brutto: 600,
+      discount: 50,
+      netto: 550,
+      percentageOfSales: 13.75,
+    },
+    {
+      key: 4,
+      artikel: 'Product D',
+      qty: 50,
+      brutto: 500,
+      discount: 80,
+      netto: 420,
+      percentageOfSales: 10.5,
     },
   ];
 
-  const data: DataType[] = [
-    // Sample data here
+  const [filteredData, setFilteredData] = useState<DataType[]>(originalData);
+
+  const columns: TableColumnsType<DataType> = [
+    { title: 'Artikel', dataIndex: 'artikel', key: 'artikel' },
+    { title: 'Qty', dataIndex: 'qty', key: 'qty' },
+    { title: 'Brutto', dataIndex: 'brutto', key: 'brutto' },
+    { title: 'Discount', dataIndex: 'discount', key: 'discount' },
+    { title: 'Netto', dataIndex: 'netto', key: 'netto' },
+    {
+      title: '% of Sales',
+      dataIndex: 'percentageOfSales',
+      key: 'percentageOfSales',
+      render: (value) => `${value}%`,
+    },
   ];
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchText(e.target.value);
-
-  const handleDateChange = (dates: any) => {
-    setDateFilter(dates);
-    // Additional date filtering logic here
-  };
-
-  const handleBrandChange = (value: any) => {
-    setBrand(value);
-    // Additional brand filtering logic here
-  };
-
-  const handleExport = (fileType: any) => {
-    if (fileType === 'csv') {
-      // Logika ekspor CSV di sini
-    } else if (fileType === 'pdf') {
-      // Logika ekspor PDF di sini
+  const handleSearch = (value: string) => {
+    if (value.trim() === '') {
+      // Reset to original data if search input is empty
+      setFilteredData(originalData);
+    } else {
+      // Filter data based on search input
+      const filtered = originalData.filter((item) => item.artikel.toLowerCase().includes(value.toLowerCase()));
+      setFilteredData(filtered);
     }
   };
 
-  const handlePaginationChange = (page: any, pageSize: any) => {
-    setPagination({ current: page, pageSize });
-    // Pagination logic can be further customized if needed
+  const handleDateChange = (dates: [dayjs.Dayjs | null, dayjs.Dayjs | null]) => {
+    console.log('Selected date range:', dates);
   };
 
-  const filteredData = data.filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()) && (!dateFilter || /* Logic to filter by date range if applicable */ true) && (!brand || /* Logic to filter by selected brand */ true));
+  const handleLimitChange = (value: number) => {
+    console.log('Selected limit:', value);
+  };
 
-  const showFilterModal = () => setIsModalVisible(true);
-  const handleOk = () => setIsModalVisible(false);
-  const handleCancel = () => setIsModalVisible(false);
+  const handleBrandChange = (value: string) => {
+    console.log('Selected brand:', value);
+  };
+
+  const handleExport = (fileType: string) => {
+    console.log(`Exporting as ${fileType}`);
+  };
+
+  const handlePaginationChange = (page: number, pageSize?: number) => {
+    console.log('Pagination changed to:', page, pageSize);
+  };
 
   return (
-    <Suspense fallback={<LoadingComponent />}>
-      <Row justify='space-between' style={{ marginBottom: '16px' }}>
-        <Col>
-          <Breadcrumb
-            items={[
-              { href: '#', title: 'Home' },
-              { href: '/my-profile', title: 'My Profile' },
-            ]}
-          />
-        </Col>
-        <Col>
-          <Input placeholder='Search by Name' prefix={<SearchOutlined />} value={searchText} onChange={handleSearchChange} style={{ width: 200, marginRight: '16px' }} />
-          <RangePicker onChange={handleDateChange} style={{ marginRight: '16px' }} />
-          <Button icon={<FilterOutlined />} onClick={showFilterModal} style={{ marginRight: '16px' }}>
-            Filter
-          </Button>
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item key='1' icon={<DownloadOutlined />} onClick={() => handleExport('csv')}>
-                  Export as CSV
-                </Menu.Item>
-                <Menu.Item key='2' icon={<DownloadOutlined />} onClick={() => handleExport('pdf')}>
-                  Export as PDF
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button icon={<DownloadOutlined />}>Export</Button>
-          </Dropdown>
-        </Col>
-        <Col>
-        <Select placeholder='Select Brand' onChange={handleBrandChange} style={{ width: '100%', marginBottom: '16px' }}>
-          <Option value='brand1'>Brand 1</Option>
-          <Option value='brand2'>Brand 2</Option>
-          <Option value='brand3'>Brand 3</Option>
-        </Select>
-        </Col>
-      </Row>
-      <Table
+    <div>
+      <h2>Product Page</h2>
+      <ProductTableComponent
         columns={columns}
-        expandable={{
-          expandedRowRender: (record) => (record.children ? <Table columns={columns} dataSource={record.children} pagination={false} showHeader={false} /> : <p style={{ margin: 0 }}>{record.description}</p>),
-          rowExpandable: (record) => record.name !== 'Not Expandable',
-        }}
-        dataSource={filteredData}
+        data={filteredData}
+        onSearch={handleSearch}
+        onDateChange={handleDateChange}
+        onLimitChange={handleLimitChange}
+        onBrandChange={handleBrandChange}
+        onExport={handleExport}
         pagination={{
-          current: pagination.current,
-          pageSize: pagination.pageSize,
+          current: 1,
+          pageSize: 10,
+          total: filteredData.length,
           onChange: handlePaginationChange,
-          showSizeChanger: true,
-          pageSizeOptions: ['10', '20', '50', '100'],
         }}
       />
-      <Modal title='Filter Options' visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-        <p>Additional Filter Options:</p>
-      </Modal>
-    </Suspense>
+    </div>
   );
 };
 
