@@ -101,6 +101,7 @@ const ProductPerformancePage: React.FC = () => {
 
   return (
     <div>
+      <h1>group performance</h1>
       <ProductTableComponent
         columns={columns}
         data={filteredData}
