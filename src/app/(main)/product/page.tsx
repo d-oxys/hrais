@@ -72,10 +72,8 @@ const ProductPage: React.FC = () => {
 
   const handleSearch = (value: string) => {
     if (value.trim() === '') {
-      // Reset to original data if search input is empty
       setFilteredData(originalData);
     } else {
-      // Filter data based on search input
       const filtered = originalData.filter((item) => item.artikel.toLowerCase().includes(value.toLowerCase()));
       setFilteredData(filtered);
     }

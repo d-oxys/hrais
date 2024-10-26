@@ -137,7 +137,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
             onChange={handleDateChange}
             className={`w-52 ${styles.rangePickerPlaceholder}`}
             renderExtraFooter={() => (
-              <div>
+              <div className='my-4'>
                 <div className='flex space-x-2 mt-2'>
                   {dateFilterOptions.slice(0, 6).map((option) => (
                     <button key={option.value} onClick={() => quickSelect(option.value)} className='text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline'>
