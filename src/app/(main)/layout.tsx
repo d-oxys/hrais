@@ -19,7 +19,7 @@ const DashboardLayout = ({ children }: { children: any }) => {
   const route = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useState<any>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [permissions, setPermissions] = useState<any>(null);
 
   const toggle = () => {
@@ -27,64 +27,64 @@ const DashboardLayout = ({ children }: { children: any }) => {
   };
 
   // Fetch roles data with access token
-  useEffect(() => {
-    const fetchRolesData = async () => {
-      try {
-        const session: any = await getSession();
-        const accessToken = session?.accessToken;
+  // useEffect(() => {
+  //   const fetchRolesData = async () => {
+  //     try {
+  //       const session: any = await getSession();
+  //       const accessToken = session?.accessToken;
 
-        if (!accessToken) {
-          throw new Error('Access token is not available');
-        }
+  //       if (!accessToken) {
+  //         throw new Error('Access token is not available');
+  //       }
 
-        const response = await axios.get('https://apps-api-dev.duapuluhtiga.com/api/v1/settings/roles/module', {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+  //       const response = await axios.get('https://apps-api-dev.duapuluhtiga.com/api/v1/settings/roles/module', {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       });
 
-        const data = response.data;
+  //       const data = response.data;
 
-        const filteredData = data.result.data
-          .filter((module: any) => module.module.status.toLowerCase() === 'aktif')
-          .map((module: any) => ({
-            id: module.module.id,
-            name: module.module.name,
-            url: module.module.url,
-            icon: module.module.icon,
-            functions: module.module.functions
-              .filter((func: any) => func.function.status.toLowerCase() === 'aktif') // Hanya function aktif
-              .map((func: any) => ({
-                id: func.function.id,
-                name: func.function.name,
-                url: `${module.module.url}${func.function.url}`,
-              })),
-          }));
+  //       const filteredData = data.result.data
+  //         .filter((module: any) => module.module.status.toLowerCase() === 'aktif')
+  //         .map((module: any) => ({
+  //           id: module.module.id,
+  //           name: module.module.name,
+  //           url: module.module.url,
+  //           icon: module.module.icon,
+  //           functions: module.module.functions
+  //             .filter((func: any) => func.function.status.toLowerCase() === 'aktif') // Hanya function aktif
+  //             .map((func: any) => ({
+  //               id: func.function.id,
+  //               name: func.function.name,
+  //               url: `${module.module.url}${func.function.url}`,
+  //             })),
+  //         }));
 
-        const permissionsData = filteredData.reduce((acc: any, module: any) => {
-          module.functions.forEach((func: any) => {
-            acc[module.name] = acc[module.name] || {};
-            acc[module.name][func.name] = {
-              read: func.read,
-              create: func.create,
-              update: func.update,
-              delete: func.delete,
-            };
-          });
-          return acc;
-        }, {});
+  //       const permissionsData = filteredData.reduce((acc: any, module: any) => {
+  //         module.functions.forEach((func: any) => {
+  //           acc[module.name] = acc[module.name] || {};
+  //           acc[module.name][func.name] = {
+  //             read: func.read,
+  //             create: func.create,
+  //             update: func.update,
+  //             delete: func.delete,
+  //           };
+  //         });
+  //         return acc;
+  //       }, {});
 
-        setMenu(filteredData);
-        setPermissions(permissionsData);
-        setLoading(false);
-      } catch (error) {
-        console.error('Failed to fetch roles data:', error);
-        setLoading(false);
-      }
-    };
+  //       setMenu(filteredData);
+  //       setPermissions(permissionsData);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       console.error('Failed to fetch roles data:', error);
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchRolesData();
-  }, []);
+  //   fetchRolesData();
+  // }, []);
 
   const items = [
     {
