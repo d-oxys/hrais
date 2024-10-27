@@ -27,6 +27,8 @@ import moduleSlice from './slices/module.slice';
 import rasiteSlice from './slices/rasite.slice';
 import functionSlice from './slices/function.slice';
 import userRoleSlice from './slices/user-role.slice';
+import selectedSitesReducer from './slices/selectedSitesSlice';
+import groupKategoriReducer from './slices/groupKategori.slice';
 
 export const makeStore = (extraMiddlewares: any = []) =>
   configureStore({
@@ -54,6 +56,8 @@ export const makeStore = (extraMiddlewares: any = []) =>
       function: functionSlice,
       rasiteGroup: rasiteSlice,
       userRole: userRoleSlice,
+      selectedSites: selectedSitesReducer,
+      groupKategori: groupKategoriReducer,
     },
     middleware: (getDefaultMiddleware) => {
       return getDefaultMiddleware().concat(extraMiddlewares);

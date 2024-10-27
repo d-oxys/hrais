@@ -1,56 +1,55 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { Table, TableColumnsType, Modal, Select } from 'antd';
+import React, { Suspense, useEffect, useState } from 'react';
+import { Table, TableColumnsType, Modal } from 'antd';
 import ProductTableComponent from '@root/app/components/Table/product';
-import originalData from '@root/libs/constants/staticdata';
 import { InfoCircleOutlined, TagOutlined, MoneyCollectOutlined, PercentageOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '@root/libs/store';
-import { getSiteData } from '@root/libs/store/thunk/rasite';
-import _ from 'lodash';
-
-const { Option } = Select;
+import { fetchSalesData } from '@root/libs/store/thunk/groupKategori';
+import { SalesData } from '@root/libs/store/slices/groupKategori.slice';
+import FormPermission from '../components/FormPermission';
+import { formatRupiah } from '@root/libs/utils/formatCurrency';
+import dayjs, { Dayjs } from 'dayjs';
 
 const ProductPerformancePage: React.FC = () => {
-  const [filteredData, setFilteredData] = useState(originalData);
+  const dispatch = useAppDispatch();
+  const { sales, loading, error } = useAppSelector((state) => state.groupKategori);
+  const [filteredData, setFilteredData] = useState<SalesData[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
-  const dispatch = useAppDispatch();
-  const { loading: relationLoading }: { loading: boolean } = useAppSelector((state) => state.relation);
+  const selectedSites = useAppSelector((state) => state.selectedSites.sites);
+  const [selectedRange, setSelectedRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
 
-  // Define filter options
-  const channelOptions = [
-    { value: 'online', label: 'Online' },
-    { value: 'offline', label: 'Offline' },
-    // Add more channels as needed
-  ];
+  useEffect(() => {
+    const awal = Array.isArray(selectedRange) && selectedRange.length > 0 && selectedRange[0] ? selectedRange[0].format('YYYY-MM-DD') : '2023-01-01';
+    const akhir = Array.isArray(selectedRange) && selectedRange.length > 1 && selectedRange[1] ? selectedRange[1].format('YYYY-MM-DD') : '2023-12-31';
+    const params = {
+      group: 'kategori',
+      kategori: 'JACKET',
+      awal,
+      akhir,
+      limit: 100,
+    };
 
-  const subCategoryOptions = [
-    { value: 'electronics', label: 'Electronics' },
-    { value: 'furniture', label: 'Furniture' },
-    // Add more subcategories as needed
-  ];
+    dispatch(fetchSalesData(params));
+  }, [dispatch, selectedRange]);
 
-  const [siteOptions, setSiteOptions] = useState<any>([]);
-  const { sitedata, loading: siteLoading }: { sitedata: any; loading: boolean } = useAppSelector((state) => state.rasiteGroup);
+  useEffect(() => {
+    if (sales) {
+      setFilteredData(sales);
+    }
+  }, [sales]);
 
-  const categoryOptions = [
-    { value: 'category1', label: 'Category 1' },
-    { value: 'category2', label: 'Category 2' },
-    // Add more categories as needed
-  ];
-
-  const groupOptions = [
-    { value: 'group1', label: 'Group 1' },
-    { value: 'group2', label: 'Group 2' },
-    // Add more groups as needed
-  ];
-
-  const columns: TableColumnsType<any> = [
+  const columns: TableColumnsType<SalesData> = [
     {
       title: 'Artikel',
       dataIndex: 'artikel',
       key: 'artikel',
-      render: (text, record) => <a onClick={() => handleArticleClick(record)}>{text}</a>,
+      render: (text, record) => (
+        <div>
+          <div className='text-base font-semibold'>{record.description}</div>
+          <div className='text-sm'>{record.artikel}</div>
+        </div>
+      ),
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
@@ -73,6 +72,7 @@ const ProductPerformancePage: React.FC = () => {
       title: 'Brutto',
       dataIndex: 'brutto',
       key: 'brutto',
+      render: (value) => formatRupiah(value),
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
@@ -82,8 +82,9 @@ const ProductPerformancePage: React.FC = () => {
     },
     {
       title: 'Discount',
-      dataIndex: 'discount',
+      dataIndex: 'disc',
       key: 'discount',
+      render: (value) => formatRupiah(value),
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
@@ -95,6 +96,7 @@ const ProductPerformancePage: React.FC = () => {
       title: 'Netto',
       dataIndex: 'netto',
       key: 'netto',
+      render: (value) => formatRupiah(value),
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
@@ -104,9 +106,9 @@ const ProductPerformancePage: React.FC = () => {
     },
     {
       title: '% of Sales',
-      dataIndex: 'percentageOfSales',
+      dataIndex: 'sales_percetange',
       key: 'percentageOfSales',
-      render: (value) => `${value}%`,
+      render: (value) => `${value ? value.toFixed(2) : 0}%`,
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
@@ -116,61 +118,7 @@ const ProductPerformancePage: React.FC = () => {
     },
   ];
 
-  const secondaryColumns: TableColumnsType<any> = [
-    {
-      title: 'Index',
-      dataIndex: 'key',
-      key: 'key',
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
-    },
-    {
-      title: 'Color',
-      dataIndex: 'details',
-      key: 'headerColor',
-      render: (_, record) => record.details.map((detail: any) => detail.headerColor).join(', '),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
-    },
-    {
-      title: 'Qty',
-      dataIndex: 'qty',
-      key: 'qty',
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
-    },
-  ];
-
-  const expandedRowRender = (record: any) => <Table columns={columns} dataSource={[record]} pagination={false} rowClassName={() => 'expanded-row'} />;
-
-  useEffect(() => {
-    dispatch(getSiteData());
-  }, [dispatch]);
-
-  useEffect(() => {
-    setSiteOptions(sitedata);
-  }, [sitedata]);
-
-  const handleSearch = (value: string) => {
-    if (value.trim() === '') {
-      setFilteredData(originalData);
-    } else {
-      const filtered = originalData.filter((item) => item.artikel.toLowerCase().includes(value.toLowerCase()));
-      setFilteredData(filtered);
-    }
-  };
+  const handleSearch = (value: string) => {};
 
   const handleArticleClick = (record: any) => {
     setSelectedArticle(record);
@@ -182,127 +130,43 @@ const ProductPerformancePage: React.FC = () => {
     setSelectedArticle(null);
   };
 
-  const debouncedSearchSite = _.debounce(async (e: string) => {
-    await dispatch(getSiteData(e, undefined, 100));
-  }, 300);
-
-  const handleSearchSite = (e: string) => {
-    debouncedSearchSite(e);
+  const handleModalOk = () => {
+    console.log(selectedSites);
+    setIsModalVisible(false);
   };
 
-  const handleClearSite = async () => {
-    await dispatch(getSiteData());
+  const handleDateChange = (dates: [Dayjs | null, Dayjs | null]) => {
+    setSelectedRange(dates);
   };
 
   return (
-    <div>
-      <ProductTableComponent
-        columns={columns}
-        data={filteredData}
-        onSearch={handleSearch}
-        showPagination={false}
-        filterContent={
-          <div>
-            <h4>Filter by Channel</h4>
-            <Select placeholder='Select Channel' style={{ width: '100%', marginBottom: '10px' }}>
-              {channelOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
-
-            <h4>Filter by Sub Category</h4>
-            <Select placeholder='Select Sub Category' style={{ width: '100%', marginBottom: '10px' }}>
-              {subCategoryOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
-
-            <h4>Filter by Site</h4>
-            <Select placeholder='Select Site' showSearch onSearch={handleSearchSite} allowClear onClear={handleClearSite} filterOption={false} loading={siteLoading} style={{ width: '100%', marginBottom: '10px' }}>
-              {siteOptions.map((item: any) => (
-                <Select.Option key={item.site} value={item.site} disabled={siteLoading || relationLoading}>
-                  {item.site} - {item.name} ({item.category})
-                </Select.Option>
-              ))}
-            </Select>
-
-            <h4>Filter by Category</h4>
-            <Select placeholder='Select Category' style={{ width: '100%', marginBottom: '10px' }}>
-              {categoryOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
-
-            <h4>Filter by Group</h4>
-            <Select placeholder='Select Group' style={{ width: '100%', marginBottom: '10px' }}>
-              {groupOptions.map((option) => (
-                <Option key={option.value} value={option.value}>
-                  {option.label}
-                </Option>
-              ))}
-            </Select>
-          </div>
-        }
-      />
+    <Suspense>
+      <ProductTableComponent isLoading={loading} columns={columns} data={filteredData} onFilterClick={handleModalOk} onSearch={handleSearch} onDateChange={handleDateChange} showPagination={false} filterContent={<FormPermission />} />
       <Modal title='Article Details' visible={isModalVisible} onCancel={handleModalClose} footer={null}>
         {selectedArticle && (
           <div>
             <p>
-              <InfoCircleOutlined /> <strong>Artikel:</strong> {selectedArticle.artikel}
+              <InfoCircleOutlined /> <strong>Artikel:</strong> {selectedArticle.kategori}
             </p>
             <p>
               <TagOutlined /> <strong>Qty:</strong> {selectedArticle.qty}
             </p>
             <p>
-              <MoneyCollectOutlined /> <strong>Brutto:</strong> {selectedArticle.brutto}
+              <MoneyCollectOutlined /> <strong>Brutto:</strong> {formatRupiah(selectedArticle.brutto)}
             </p>
             <p>
-              <TagOutlined /> <strong>Discount:</strong> {selectedArticle.discount}
+              <TagOutlined /> <strong>Discount:</strong> {formatRupiah(selectedArticle.disc)}
             </p>
             <p>
-              <MoneyCollectOutlined /> <strong>Netto:</strong> {selectedArticle.netto}
+              <MoneyCollectOutlined /> <strong>Netto:</strong> {formatRupiah(selectedArticle.netto)}
             </p>
             <p>
-              <PercentageOutlined /> <strong>% of Sales:</strong> {selectedArticle.percentageOfSales}%
+              <PercentageOutlined /> <strong>% of Sales:</strong> {selectedArticle.sales_percetange}%
             </p>
           </div>
         )}
       </Modal>
-      <div className='my-8 flex space-x-4 bg-white'>
-        <div className='w-1/2'>
-          <h4 className='mb-4 text-lg text-black'>Top 20 Color</h4>
-          <ProductTableComponent
-            columns={secondaryColumns}
-            data={filteredData}
-            showPagination={false}
-            showFilters={false}
-            expandable={{
-              expandedRowRender,
-              rowExpandable: (record: any) => record.details.length > 0,
-            }}
-          />
-        </div>
-        <div className='w-1/2'>
-          <h4 className='mb-4 text-lg text-black'>By Price Range</h4>
-          <ProductTableComponent
-            columns={secondaryColumns}
-            data={filteredData}
-            showPagination={false}
-            showFilters={false}
-            expandable={{
-              expandedRowRender,
-              rowExpandable: (record: any) => record.details.length > 0,
-            }}
-          />
-        </div>
-      </div>
-    </div>
+    </Suspense>
   );
 };
 

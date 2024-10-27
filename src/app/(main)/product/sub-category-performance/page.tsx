@@ -1,8 +1,12 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TableColumnsType } from 'antd';
 import ProductTableComponent from '@root/app/components/Table/product';
 import dayjs from 'dayjs';
+import { useAppDispatch, useAppSelector } from '@root/libs/store';
+import { fetchSalesData } from '@root/libs/store/thunk/groupKategori';
+import { SalesData } from '@root/libs/store/slices/groupKategori.slice';
+import { formatRupiah } from '@root/libs/utils/formatCurrency';
 
 interface DataType {
   key: React.Key;
@@ -11,73 +15,117 @@ interface DataType {
   brutto: number;
   discount: number;
   netto: number;
-  percentageOfSales: number;
+  percentageOfSales: number | null;
 }
 
-const ProductPerformancePage: React.FC = () => {
-  const originalData: DataType[] = [
-    {
-      key: 1,
-      artikel: 'Product A',
-      qty: 120,
-      brutto: 1200,
-      discount: 200,
-      netto: 1000,
-      percentageOfSales: 25,
-    },
-    {
-      key: 2,
-      artikel: 'Product B',
-      qty: 80,
-      brutto: 800,
-      discount: 100,
-      netto: 700,
-      percentageOfSales: 17.5,
-    },
-    {
-      key: 3,
-      artikel: 'Product C',
-      qty: 60,
-      brutto: 600,
-      discount: 50,
-      netto: 550,
-      percentageOfSales: 13.75,
-    },
-    {
-      key: 4,
-      artikel: 'Product D',
-      qty: 50,
-      brutto: 500,
-      discount: 80,
-      netto: 420,
-      percentageOfSales: 10.5,
-    },
-  ];
+const GroupPerformancePage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { sales, loading, error } = useAppSelector((state) => state.groupKategori);
 
-  const [filteredData, setFilteredData] = useState<DataType[]>(originalData);
+  const [filteredData, setFilteredData] = useState<DataType[]>([]);
+
+  useEffect(() => {
+    const params = {
+      group: 'subkategori',
+      kategori: '',
+      awal: '2023-01-01',
+      akhir: '2023-12-31',
+      limit: 100,
+    };
+
+    dispatch(fetchSalesData(params));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (sales) {
+      const formattedData: DataType[] = sales.map((item, index) => ({
+        key: index + 1,
+        artikel: item.group,
+        qty: item.qty,
+        brutto: item.brutto,
+        discount: item.disc || 0,
+        netto: item.netto || 0,
+        percentageOfSales: item.sales_percetange,
+      }));
+
+      setFilteredData(formattedData);
+    }
+  }, [sales]);
 
   const columns: TableColumnsType<DataType> = [
-    { title: 'Artikel', dataIndex: 'artikel', key: 'artikel' },
-    { title: 'Qty', dataIndex: 'qty', key: 'qty' },
-    { title: 'Brutto', dataIndex: 'brutto', key: 'brutto' },
-    { title: 'Discount', dataIndex: 'discount', key: 'discount' },
-    { title: 'Netto', dataIndex: 'netto', key: 'netto' },
+    {
+      title: 'Group',
+      dataIndex: 'artikel',
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: '#ffffff',
+          color: '#000000',
+        },
+      }),
+      key: 'artikel',
+    },
+    {
+      title: 'Qty',
+      dataIndex: 'qty',
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: '#ffffff',
+          color: '#000000',
+        },
+      }),
+      key: 'qty',
+    },
+    {
+      title: 'Brutto',
+      dataIndex: 'brutto',
+      key: 'brutto',
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: '#ffffff',
+          color: '#000000',
+        },
+      }),
+      render: (value) => formatRupiah(value),
+    },
+    {
+      title: 'Discount',
+      dataIndex: 'discount',
+      key: 'discount',
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: '#ffffff',
+          color: '#000000',
+        },
+      }),
+      render: (value) => formatRupiah(value),
+    },
+    {
+      title: 'Netto',
+      dataIndex: 'netto',
+      key: 'netto',
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: '#ffffff',
+          color: '#000000',
+        },
+      }),
+      render: (value) => formatRupiah(value),
+    },
     {
       title: '% of Sales',
       dataIndex: 'percentageOfSales',
       key: 'percentageOfSales',
-      render: (value) => `${value}%`,
+      onHeaderCell: () => ({
+        style: {
+          backgroundColor: '#ffffff',
+          color: '#000000',
+        },
+      }),
+      render: (value) => `${value ? value.toFixed(2) : 0}%`,
     },
   ];
 
-  const handleSearch = (value: string) => {
-    if (value.trim() === '') {
-      setFilteredData(originalData);
-    } else {
-      const filtered = originalData.filter((item) => item.artikel.toLowerCase().includes(value.toLowerCase()));
-      setFilteredData(filtered);
-    }
-  };
+  const handleSearch = (value: string) => {};
 
   const handleDateChange = (dates: [dayjs.Dayjs | null, dayjs.Dayjs | null]) => {
     console.log('Selected date range:', dates);
@@ -101,8 +149,8 @@ const ProductPerformancePage: React.FC = () => {
 
   return (
     <div>
-      <h1>sub kategori performance</h1>
       <ProductTableComponent
+        loading={loading}
         columns={columns}
         data={filteredData}
         onSearch={handleSearch}
@@ -121,4 +169,4 @@ const ProductPerformancePage: React.FC = () => {
   );
 };
 
-export default ProductPerformancePage;
+export default GroupPerformancePage;

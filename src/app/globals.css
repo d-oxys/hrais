@@ -22,44 +22,6 @@ body {
   height: 24px;
 }
 
-// styles.scss
-
-// Gaya untuk baris yang diperluas
-.ant-table-row-expanded {
-  position: relative;
-  background-color: #f9f9f9; /* Warna latar belakang untuk baris yang diperluas */
-
-  &::before {
-    content: '';
-    position: absolute;
-    left: -20px; /* Posisi dari kiri untuk garis siku-siku */
-    top: 50%; /* Vertikal tengah */
-    width: 20px; /* Lebar untuk efek siku-siku */
-    height: 20px; /* Tinggi untuk efek siku-siku */
-    border-left: 2px solid #000; /* Garis vertikal */
-    border-bottom: 2px solid #000; /* Garis horizontal */
-    transform: translateY(-50%) rotate(45deg); /* Mentransformasi posisi dan rotasi */
-    z-index: 1; /* Pastikan berada di atas */
-  }
-}
-
-// Gaya untuk baris utama
-.ant-table-row {
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: -20px; /* Posisi dari kiri untuk menghubungkan ke baris sub */
-    top: 100%; /* Untuk menghubungkan ke baris sub */
-    width: 20px; /* Lebar untuk membuat efek garis */
-    height: 15px; /* Tinggi garis horizontal */
-    border-left: 2px solid #000; /* Garis vertikal */
-    border-bottom: 2px solid #000; /* Garis horizontal untuk menghubungkan */
-    z-index: 1; /* Pastikan berada di atas */
-  }
-}
-
 // Pastikan header tabel memiliki latar belakang putih
 .ant-table-header {
   background-color: white !important; /* Set background color to white for header */

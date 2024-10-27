@@ -1,13 +1,13 @@
 import React, { useState, Suspense } from 'react';
-import { Button, Col, DatePicker, Dropdown, Input, Modal, Row, Table, Select, Menu } from 'antd';
-import { FilterOutlined, SearchOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Button, Col, DatePicker, Dropdown, Input, Modal, Radio, Row, Table, Select, Menu, TableProps, RadioChangeEvent } from 'antd';
+import { FilterOutlined, SearchOutlined, DownloadOutlined, ShoppingCartOutlined, ExportOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import styles from './product.module.scss';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-interface ProductTableComponentProps {
+interface ProductTableComponentProps extends TableProps {
   columns: any[];
   data: any[];
   limitOptions?: number[];
@@ -29,7 +29,7 @@ interface ProductTableComponentProps {
   isLoading?: boolean;
   showFilters?: boolean;
   showPagination?: boolean;
-  filterContent?: React.ReactNode; // New prop for custom filter content
+  filterContent?: React.ReactNode;
 }
 
 const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
@@ -59,12 +59,14 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   isLoading = false,
   showFilters = true,
   showPagination = true,
-  filterContent, // Receive the custom content for the filter modal
+  filterContent,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRange, setSelectedRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
   const [searchText, setSearchText] = useState('');
   const [limit, setLimit] = useState(limitOptions[0] || 10);
+  const [radioValue, setRadioValue] = useState<string>('mid');
+  const [selectedBrand, setSelectedBrand] = useState<string>('Brand');
 
   const handleLimitChange = (value: number) => {
     setLimit(value);
@@ -120,6 +122,22 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     }
   };
 
+  const handleFilterClick = () => {
+    if (onFilterClick) {
+      onFilterClick();
+    }
+    setIsModalVisible(false);
+  };
+
+  const handleRadioChange = (e: RadioChangeEvent) => {
+    setRadioValue(e.target.value);
+  };
+
+  const handleBrandChange = (value: string) => {
+    setSelectedBrand(value);
+    if (onBrandChange) onBrandChange(value);
+  };
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       {showFilters && (
@@ -161,39 +179,41 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
               )}
             />
 
-            {brandOptions.length > 0 && (
-              <Select placeholder='Select Brand' onChange={onBrandChange} className='w-52'>
-                {brandOptions.map((brand) => (
-                  <Option key={brand.value} value={brand.value}>
-                    {brand.label}
-                  </Option>
-                ))}
-              </Select>
-            )}
+            {/* Brand Selection Dropdown */}
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item key='bodypack' onClick={() => handleBrandChange('Bodypack')}>
+                    <ShoppingCartOutlined style={{ marginRight: 8 }} /> Bodypack
+                  </Menu.Item>
+                  <Menu.Item key='export' onClick={() => handleBrandChange('Export')}>
+                    <ExportOutlined style={{ marginRight: 8 }} /> Export
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Button icon={<DownloadOutlined />}>{selectedBrand}</Button>
+            </Dropdown>
 
             <Button icon={<FilterOutlined />} onClick={() => setIsModalVisible(true)}>
               Filter
             </Button>
 
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item key='csv' icon={<DownloadOutlined />} onClick={() => onExport && onExport('csv')}>
-                    Export as CSV
-                  </Menu.Item>
-                  <Menu.Item key='pdf' icon={<DownloadOutlined />} onClick={() => onExport && onExport('pdf')}>
-                    Export as PDF
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Button icon={<DownloadOutlined />}>Export</Button>
-            </Dropdown>
-
             <Input placeholder='Search by Name' prefix={<SearchOutlined />} value={searchText} onChange={handleSearchChange} className='w-52' allowClear />
           </Col>
         </Row>
       )}
+
+      {/* <div className='flex space-x-4 my-4'>
+        <span className='text-sm'>Select Range:</span>
+        <Radio.Group onChange={handleRadioChange} value={radioValue}>
+          <Radio value='low'>Low</Radio>
+          <Radio value='mid-low'>Mid-Low</Radio>
+          <Radio value='mid'>Mid</Radio>
+          <Radio value='mid-high'>Mid-High</Radio>
+          <Radio value='high'>High</Radio>
+        </Radio.Group>
+      </div> */}
 
       <Table
         columns={columns}
@@ -208,8 +228,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
           },
         })}
       />
-
-      <Modal title='Filter Options' visible={isModalVisible} onOk={onFilterClick} onCancel={() => setIsModalVisible(false)}>
+      <Modal title='Filter Options' visible={isModalVisible} onOk={handleFilterClick} onCancel={() => setIsModalVisible(false)} className='w-[70%] h-[80%]'>
         {filterContent || <p>Additional Filter Options</p>}
       </Modal>
     </Suspense>
