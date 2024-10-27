@@ -129,9 +129,20 @@ const ProductPerformancePage: React.FC = () => {
     setIsModalVisible(false);
     setSelectedArticle(null);
   };
-
   const handleModalOk = () => {
     console.log(selectedSites);
+    const awal = Array.isArray(selectedRange) && selectedRange.length > 0 && selectedRange[0] ? selectedRange[0].format('YYYY-MM-DD') : '2023-01-01';
+    const akhir = Array.isArray(selectedRange) && selectedRange.length > 1 && selectedRange[1] ? selectedRange[1].format('YYYY-MM-DD') : '2023-12-31';
+    const params = {
+      group: 'kategori',
+      kategori: 'JACKET',
+      awal,
+      akhir,
+      limit: 100,
+      kdtoko: selectedSites.join(','),
+    };
+
+    dispatch(fetchSalesData(params));
     setIsModalVisible(false);
   };
 

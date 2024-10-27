@@ -1,171 +1,159 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import { TableColumnsType } from 'antd';
+import React, { Suspense, useEffect, useState } from 'react';
+import { Table, TableColumnsType, Modal } from 'antd';
 import ProductTableComponent from '@root/app/components/Table/product';
-import dayjs from 'dayjs';
+import { InfoCircleOutlined, TagOutlined, MoneyCollectOutlined, PercentageOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '@root/libs/store';
 import { fetchSalesData } from '@root/libs/store/thunk/groupKategori';
 import { SalesData } from '@root/libs/store/slices/groupKategori.slice';
+import FormPermission from '../components/FormPermission';
 import { formatRupiah } from '@root/libs/utils/formatCurrency';
-
-interface DataType {
-  key: React.Key;
-  artikel: string;
-  qty: number;
-  brutto: number;
-  discount: number;
-  netto: number;
-  percentageOfSales: number | null;
-}
+import dayjs, { Dayjs } from 'dayjs';
 
 const KategoriPerformancePage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { sales, loading, error } = useAppSelector((state) => state.groupKategori);
-
-  const [filteredData, setFilteredData] = useState<DataType[]>([]);
+  const [filteredData, setFilteredData] = useState<SalesData[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const selectedSites = useAppSelector((state) => state.selectedSites.sites);
+  const [selectedRange, setSelectedRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
 
   useEffect(() => {
+    const awal = Array.isArray(selectedRange) && selectedRange.length > 0 && selectedRange[0] ? selectedRange[0].format('YYYY-MM-DD') : '2023-01-01';
+    const akhir = Array.isArray(selectedRange) && selectedRange.length > 1 && selectedRange[1] ? selectedRange[1].format('YYYY-MM-DD') : '2023-12-31';
     const params = {
       group: 'kategori',
       kategori: '',
-      awal: '2023-01-01',
-      akhir: '2023-12-31',
+      awal,
+      akhir,
       limit: 100,
     };
 
     dispatch(fetchSalesData(params));
-  }, [dispatch]);
+  }, [dispatch, selectedRange]);
 
   useEffect(() => {
     if (sales) {
-      const formattedData: DataType[] = sales.map((item, index) => ({
-        key: index + 1,
-        artikel: item.group,
-        qty: item.qty,
-        brutto: item.brutto,
-        discount: item.disc || 0,
-        netto: item.netto || 0,
-        percentageOfSales: item.sales_percetange,
-      }));
-
-      setFilteredData(formattedData);
+      setFilteredData(sales);
     }
   }, [sales]);
 
-  const columns: TableColumnsType<DataType> = [
+  const columns: TableColumnsType<SalesData> = [
     {
-      title: 'Group',
-      dataIndex: 'artikel',
+      title: 'kategori',
+      dataIndex: 'kategori',
+      key: 'kategori',
+      render: (text, record) => (
+        <div>
+          <div className='text-base font-semibold'>{record.kategori}</div>
+        </div>
+      ),
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
           color: '#000000',
         },
       }),
-      key: 'artikel',
     },
     {
       title: 'Qty',
       dataIndex: 'qty',
+      key: 'qty',
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
           color: '#000000',
         },
       }),
-      key: 'qty',
     },
     {
       title: 'Brutto',
       dataIndex: 'brutto',
       key: 'brutto',
+      render: (value) => formatRupiah(value),
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
           color: '#000000',
         },
       }),
-      render: (value) => formatRupiah(value),
     },
     {
       title: 'Discount',
-      dataIndex: 'discount',
+      dataIndex: 'disc',
       key: 'discount',
+      render: (value) => formatRupiah(value),
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
           color: '#000000',
         },
       }),
-      render: (value) => formatRupiah(value),
     },
     {
       title: 'Netto',
       dataIndex: 'netto',
       key: 'netto',
+      render: (value) => formatRupiah(value),
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
           color: '#000000',
         },
       }),
-      render: (value) => formatRupiah(value),
     },
     {
       title: '% of Sales',
-      dataIndex: 'percentageOfSales',
+      dataIndex: 'sales_percetange',
       key: 'percentageOfSales',
+      render: (value) => `${value ? value.toFixed(2) : 0}%`,
       onHeaderCell: () => ({
         style: {
           backgroundColor: '#ffffff',
           color: '#000000',
         },
       }),
-      render: (value) => `${value ? value.toFixed(2) : 0}%`,
     },
   ];
 
   const handleSearch = (value: string) => {};
 
-  const handleDateChange = (dates: [dayjs.Dayjs | null, dayjs.Dayjs | null]) => {
-    console.log('Selected date range:', dates);
+  const handleArticleClick = (record: any) => {
+    setSelectedArticle(record);
+    setIsModalVisible(true);
   };
 
-  const handleLimitChange = (value: number) => {
-    console.log('Selected limit:', value);
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    setSelectedArticle(null);
   };
 
-  const handleBrandChange = (value: string) => {
-    console.log('Selected brand:', value);
+  const handleModalOk = () => {
+    console.log(selectedSites);
+    const awal = Array.isArray(selectedRange) && selectedRange.length > 0 && selectedRange[0] ? selectedRange[0].format('YYYY-MM-DD') : '2023-01-01';
+    const akhir = Array.isArray(selectedRange) && selectedRange.length > 1 && selectedRange[1] ? selectedRange[1].format('YYYY-MM-DD') : '2023-12-31';
+    const params = {
+      group: 'kategori',
+      kategori: '',
+      awal,
+      akhir,
+      limit: 100,
+      kdtoko: selectedSites.join(','),
+    };
+
+    dispatch(fetchSalesData(params));
+    setIsModalVisible(false);
   };
 
-  const handleExport = (fileType: string) => {
-    console.log(`Exporting as ${fileType}`);
-  };
-
-  const handlePaginationChange = (page: number, pageSize?: number) => {
-    console.log('Pagination changed to:', page, pageSize);
+  const handleDateChange = (dates: [Dayjs | null, Dayjs | null]) => {
+    setSelectedRange(dates);
   };
 
   return (
-    <div>
-      <ProductTableComponent
-        loading={loading}
-        columns={columns}
-        data={filteredData}
-        onSearch={handleSearch}
-        onDateChange={handleDateChange}
-        onLimitChange={handleLimitChange}
-        onBrandChange={handleBrandChange}
-        onExport={handleExport}
-        pagination={{
-          current: 1,
-          pageSize: 10,
-          total: filteredData.length,
-          onChange: handlePaginationChange,
-        }}
-      />
-    </div>
+    <Suspense>
+      <ProductTableComponent isLoading={loading} columns={columns} data={filteredData} onFilterClick={handleModalOk} onSearch={handleSearch} onDateChange={handleDateChange} showPagination={false} filterContent={<FormPermission />} />
+    </Suspense>
   );
 };
 
