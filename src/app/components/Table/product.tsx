@@ -1,13 +1,33 @@
-import React, { useState, Suspense } from 'react';
-import { Button, Col, DatePicker, Dropdown, Input, Modal, Radio, Row, Table, Select, Menu, TableProps, RadioChangeEvent } from 'antd';
-import { FilterOutlined, SearchOutlined, DownloadOutlined, ShoppingCartOutlined, ExportOutlined } from '@ant-design/icons';
-import dayjs, { Dayjs } from 'dayjs';
-import styles from './product.module.scss';
+import React, { useState, Suspense, useEffect } from "react";
+import {
+  Button,
+  Col,
+  DatePicker,
+  Dropdown,
+  Input,
+  Modal,
+  Radio,
+  Row,
+  Table,
+  Select,
+  Menu,
+  TableProps,
+  RadioChangeEvent,
+} from "antd";
+import {
+  FilterOutlined,
+  SearchOutlined,
+  DownloadOutlined,
+  ShoppingCartOutlined,
+  ExportOutlined,
+} from "@ant-design/icons";
+import dayjs, { Dayjs } from "dayjs";
+import styles from "./product.module.scss";
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
-interface ProductTableComponentProps extends TableProps {
+interface ProductTableComponentProps extends TableProps<any> {
   columns: any[];
   data: any[];
   limitOptions?: number[];
@@ -19,12 +39,14 @@ interface ProductTableComponentProps extends TableProps {
     total: number;
     onChange: (page: number, pageSize?: number) => void;
   };
+  onRow?: (record: any, index?: number) => React.HTMLAttributes<any>;
   onSearch?: (value: string) => void;
   onDateChange?: (dates: [Dayjs | null, Dayjs | null]) => void;
   onLimitChange?: (value: number) => void;
   onBrandChange?: (value: string) => void;
   onExport?: (fileType: string) => void;
   onFilterClick?: () => void;
+  expandedRowRender?: (record: any) => React.ReactNode;
   expandable?: any;
   isLoading?: boolean;
   showFilters?: boolean;
@@ -38,16 +60,17 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   limitOptions = [10, 20, 50, 100],
   brandOptions = [],
   pagination,
+  expandedRowRender,
   dateFilterOptions = [
-    { label: 'Today', value: 'today' },
-    { label: 'Yesterday', value: 'yesterday' },
-    { label: 'This Week', value: 'thisWeek' },
-    { label: 'Last Week', value: 'lastWeek' },
-    { label: 'Last 7 Days', value: 'last7Days' },
-    { label: 'Last 14 Days', value: 'last14Days' },
-    { label: 'Last 28 Days', value: 'last28Days' },
-    { label: 'This Month', value: 'thisMonth' },
-    { label: 'Last Month', value: 'lastMonth' },
+    { label: "Today", value: "today" },
+    { label: "Yesterday", value: "yesterday" },
+    { label: "This Week", value: "thisWeek" },
+    { label: "Last Week", value: "lastWeek" },
+    { label: "Last 7 Days", value: "last7Days" },
+    { label: "Last 14 Days", value: "last14Days" },
+    { label: "Last 28 Days", value: "last28Days" },
+    { label: "This Month", value: "thisMonth" },
+    { label: "Last Month", value: "lastMonth" },
   ],
   onSearch,
   onDateChange,
@@ -60,17 +83,24 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   showFilters = true,
   showPagination = true,
   filterContent,
+  onRow,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedRange, setSelectedRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
-  const [searchText, setSearchText] = useState('');
+  const [selectedRange, setSelectedRange] = useState<
+    [Dayjs | null, Dayjs | null]
+  >([null, null]);
+  const [searchText, setSearchText] = useState("");
   const [limit, setLimit] = useState(limitOptions[0] || 10);
-  const [radioValue, setRadioValue] = useState<string>('mid');
-  const [selectedBrand, setSelectedBrand] = useState<string>('Brand');
+  const [radioValue, setRadioValue] = useState<string>("mid");
+  const [selectedBrand, setSelectedBrand] = useState<string>("Brand");
+  const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
+
+  useEffect(() => {
+    if (onLimitChange) onLimitChange(limit);
+  }, [limit, onLimitChange]);
 
   const handleLimitChange = (value: number) => {
     setLimit(value);
-    if (onLimitChange) onLimitChange(value);
   };
 
   const handleDateChange = (dates: [Dayjs | null, Dayjs | null]) => {
@@ -82,32 +112,38 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     const today = dayjs();
     let range: [Dayjs, Dayjs];
     switch (type) {
-      case 'today':
+      case "today":
         range = [today, today];
         break;
-      case 'yesterday':
-        range = [today.subtract(1, 'day'), today.subtract(1, 'day')];
+      case "yesterday":
+        range = [today.subtract(1, "day"), today.subtract(1, "day")];
         break;
-      case 'thisWeek':
-        range = [today.startOf('week'), today.endOf('week')];
+      case "thisWeek":
+        range = [today.startOf("week"), today.endOf("week")];
         break;
-      case 'lastWeek':
-        range = [today.subtract(1, 'week').startOf('week'), today.subtract(1, 'week').endOf('week')];
+      case "lastWeek":
+        range = [
+          today.subtract(1, "week").startOf("week"),
+          today.subtract(1, "week").endOf("week"),
+        ];
         break;
-      case 'last7Days':
-        range = [today.subtract(6, 'day'), today];
+      case "last7Days":
+        range = [today.subtract(6, "day"), today];
         break;
-      case 'last14Days':
-        range = [today.subtract(13, 'day'), today];
+      case "last14Days":
+        range = [today.subtract(13, "day"), today];
         break;
-      case 'last28Days':
-        range = [today.subtract(27, 'day'), today];
+      case "last28Days":
+        range = [today.subtract(27, "day"), today];
         break;
-      case 'thisMonth':
-        range = [today.startOf('month'), today.endOf('month')];
+      case "thisMonth":
+        range = [today.startOf("month"), today.endOf("month")];
         break;
-      case 'lastMonth':
-        range = [today.subtract(1, 'month').startOf('month'), today.subtract(1, 'month').endOf('month')];
+      case "lastMonth":
+        range = [
+          today.subtract(1, "month").startOf("month"),
+          today.subtract(1, "month").endOf("month"),
+        ];
         break;
       default:
         return;
@@ -117,15 +153,16 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
-    if (onSearch && (e.target.value.length >= 3 || e.target.value.length === 0)) {
+    if (
+      onSearch &&
+      (e.target.value.length >= 3 || e.target.value.length === 0)
+    ) {
       onSearch(e.target.value);
     }
   };
 
   const handleFilterClick = () => {
-    if (onFilterClick) {
-      onFilterClick();
-    }
+    if (onFilterClick) onFilterClick();
     setIsModalVisible(false);
   };
 
@@ -138,39 +175,51 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     if (onBrandChange) onBrandChange(value);
   };
 
+  const handleExpand = (expanded: boolean, record: any) => {
+    setExpandedRowKeys(expanded ? [record.key] : []);
+  };
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       {showFilters && (
-        <Row className='mb-4 justify-between'>
-          <Col className='flex items-center space-x-2'>
-            <span className='text-sm'>Show</span>
-            <Select value={limit} onChange={handleLimitChange} className='w-20'>
+        <Row className="mb-4 justify-between">
+          <Col className="flex items-center space-x-2">
+            <span className="text-sm">Show</span>
+            <Select value={limit} onChange={handleLimitChange} className="w-20">
               {limitOptions.map((option) => (
                 <Option key={option} value={option}>
                   {option}
                 </Option>
               ))}
             </Select>
-            <span className='text-sm'>entries</span>
+            <span className="text-sm">entries</span>
           </Col>
 
-          <Col className='flex items-center space-x-4'>
+          <Col className="flex items-center space-x-4">
             <RangePicker
               value={selectedRange}
               onChange={handleDateChange}
               className={`w-52 ${styles.rangePickerPlaceholder}`}
               renderExtraFooter={() => (
-                <div className='my-4'>
-                  <div className='flex space-x-2 mt-2'>
+                <div className="my-4">
+                  <div className="flex space-x-2 mt-2">
                     {dateFilterOptions.slice(0, 6).map((option) => (
-                      <button key={option.value} onClick={() => quickSelect(option.value)} className='text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline'>
+                      <button
+                        key={option.value}
+                        onClick={() => quickSelect(option.value)}
+                        className="text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline"
+                      >
                         {option.label}
                       </button>
                     ))}
                   </div>
-                  <div className='flex space-x-2 mt-2'>
+                  <div className="flex space-x-2 mt-2">
                     {dateFilterOptions.slice(6).map((option) => (
-                      <button key={option.value} onClick={() => quickSelect(option.value)} className='text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline'>
+                      <button
+                        key={option.value}
+                        onClick={() => quickSelect(option.value)}
+                        className="text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline"
+                      >
                         {option.label}
                       </button>
                     ))}
@@ -179,15 +228,20 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
               )}
             />
 
-            {/* Brand Selection Dropdown */}
             <Dropdown
               overlay={
                 <Menu>
-                  <Menu.Item key='bodypack' onClick={() => handleBrandChange('Bodypack')}>
+                  <Menu.Item
+                    key="bodypack"
+                    onClick={() => handleBrandChange("Bodypack")}
+                  >
                     <ShoppingCartOutlined style={{ marginRight: 8 }} /> Bodypack
                   </Menu.Item>
-                  <Menu.Item key='export' onClick={() => handleBrandChange('Export')}>
-                    <ExportOutlined style={{ marginRight: 8 }} /> Export
+                  <Menu.Item
+                    key="exsport"
+                    onClick={() => handleBrandChange("Esxport")}
+                  >
+                    <ExportOutlined style={{ marginRight: 8 }} /> Exsport
                   </Menu.Item>
                 </Menu>
               }
@@ -195,40 +249,48 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
               <Button icon={<DownloadOutlined />}>{selectedBrand}</Button>
             </Dropdown>
 
-            <Button icon={<FilterOutlined />} onClick={() => setIsModalVisible(true)}>
+            <Button
+              icon={<FilterOutlined />}
+              onClick={() => setIsModalVisible(true)}
+            >
               Filter
             </Button>
 
-            <Input placeholder='Search by Name' prefix={<SearchOutlined />} value={searchText} onChange={handleSearchChange} className='w-52' allowClear />
+            <Input
+              placeholder="Search by Name"
+              prefix={<SearchOutlined />}
+              value={searchText}
+              onChange={handleSearchChange}
+              className="w-52"
+              allowClear
+            />
           </Col>
         </Row>
       )}
 
-      {/* <div className='flex space-x-4 my-4'>
-        <span className='text-sm'>Select Range:</span>
-        <Radio.Group onChange={handleRadioChange} value={radioValue}>
-          <Radio value='low'>Low</Radio>
-          <Radio value='mid-low'>Mid-Low</Radio>
-          <Radio value='mid'>Mid</Radio>
-          <Radio value='mid-high'>Mid-High</Radio>
-          <Radio value='high'>High</Radio>
-        </Radio.Group>
-      </div> */}
-
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={data.slice(0, limit)}
         loading={isLoading}
-        expandable={expandable}
+        expandable={{ expandedRowRender }}
+        expandedRowKeys={expandedRowKeys}
+        onExpand={handleExpand}
         pagination={showPagination ? pagination : false}
+        onRow={onRow}
         onHeaderRow={() => ({
           style: {
-            backgroundColor: '#ffffff',
-            color: '#000000',
+            backgroundColor: "#ffffff",
+            color: "#000000",
           },
         })}
       />
-      <Modal title='Filter Options' visible={isModalVisible} onOk={handleFilterClick} onCancel={() => setIsModalVisible(false)} className='w-[70%] h-[80%]'>
+      <Modal
+        title="Filter Options"
+        visible={isModalVisible}
+        onOk={handleFilterClick}
+        onCancel={() => setIsModalVisible(false)}
+        className="w-[70%] h-[80%]"
+      >
         {filterContent || <p>Additional Filter Options</p>}
       </Modal>
     </Suspense>

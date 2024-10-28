@@ -1,17 +1,24 @@
 // File: layout.tsx
-'use client';
-import React, { useEffect, useState } from 'react';
-import { ConfigProvider, Layout, Dropdown, Menu, Space } from 'antd';
-import { useRouter } from 'next/navigation';
-import { SessionProvider, signOut, getSession } from 'next-auth/react';
-import AuthProvider from '@root/libs/contexts/authContext';
-import MenuComponent from '../components/Menu';
-import LoadingComponent from '../components/Loading';
-import axios from 'axios';
-import Image from 'next/image';
-import { CaretDownOutlined, LeftOutlined, RightOutlined, MailOutlined, CalendarOutlined, BellOutlined } from '@ant-design/icons';
-import styles from './layout.module.scss';
-import { PermissionsProvider } from '@root/libs/contexts/PermissionsContext';
+"use client";
+import React, { useEffect, useState } from "react";
+import { ConfigProvider, Layout, Dropdown, Menu, Space } from "antd";
+import { useRouter } from "next/navigation";
+import { SessionProvider, signOut, getSession } from "next-auth/react";
+import AuthProvider from "@root/libs/contexts/authContext";
+import MenuComponent from "../components/Menu";
+import LoadingComponent from "../components/Loading";
+import axios from "axios";
+import Image from "next/image";
+import {
+  CaretDownOutlined,
+  LeftOutlined,
+  RightOutlined,
+  MailOutlined,
+  CalendarOutlined,
+  BellOutlined,
+} from "@ant-design/icons";
+import styles from "./layout.module.scss";
+import { PermissionsProvider } from "@root/libs/contexts/PermissionsContext";
 
 const { Header, Sider, Content } = Layout;
 
@@ -88,16 +95,16 @@ const DashboardLayout = ({ children }: { children: any }) => {
 
   const items = [
     {
-      key: '1',
-      label: <div onClick={() => route.push('/my-profile')}>Profile</div>,
+      key: "1",
+      label: <div onClick={() => route.push("/my-profile")}>Profile</div>,
     },
     {
-      key: '2',
+      key: "2",
       label: (
         <div
           onClick={() =>
             signOut({
-              callbackUrl: '/',
+              callbackUrl: "/",
             })
           }
         >
@@ -111,8 +118,8 @@ const DashboardLayout = ({ children }: { children: any }) => {
     <ConfigProvider
       theme={{
         token: {
-          fontFamily: 'Poppins',
-          colorText: '#5C6880',
+          fontFamily: "Poppins",
+          colorText: "#5C6880",
         },
       }}
     >
@@ -120,13 +127,21 @@ const DashboardLayout = ({ children }: { children: any }) => {
         <AuthProvider>
           {!loading ? (
             <PermissionsProvider value={permissions}>
-              {' '}
+              {" "}
               {/* Tambahkan PermissionsProvider */}
-              <Layout style={{ minHeight: '100vh' }} className='font-Poppins'>
-                <Header className='bg-white flex border border-b-[#5B5B5B]/25' style={{ padding: 0, position: 'sticky', top: 0, zIndex: 1 }}>
-                  <div className='min-w-[200px] px-5'>
-                    <div className='flex gap-4 cursor-pointer items-center justify-center'>
-                      <Image src='/assets/images/23-apps-header-logo.svg' width={100} height={40} alt='Logo Header' />
+              <Layout style={{ minHeight: "100vh" }} className="font-Poppins">
+                <Header
+                  className="bg-white flex border border-b-[#5B5B5B]/25"
+                  style={{ padding: 0, position: "sticky", top: 0, zIndex: 1 }}
+                >
+                  <div className="min-w-[200px] px-5">
+                    <div className="flex gap-4 cursor-pointer items-center justify-center">
+                      <Image
+                        src="/assets/images/23-apps-header-logo.svg"
+                        width={100}
+                        height={40}
+                        alt="Logo Header"
+                      />
                       <div>
                         <CaretDownOutlined />
                       </div>
@@ -168,7 +183,7 @@ const DashboardLayout = ({ children }: { children: any }) => {
                     </div>
                   </div> */}
                 </Header>
-                <Layout className='bg-[#EEEEEE]'>
+                <Layout className="bg-[#EEEEEE]">
                   {/* <Sider trigger={null} collapsible={true} collapsed={collapsed} theme='light'>
                     <div className='flex flex-col justify-between h-full'>
                       <div className={styles['menu-list']}>
@@ -176,7 +191,9 @@ const DashboardLayout = ({ children }: { children: any }) => {
                       </div>
                     </div>
                   </Sider> */}
-                  <Content style={{ margin: '16px', background: '#EEEEEE' }}>{children}</Content>
+                  <Content style={{ margin: "16px", background: "#EEEEEE" }}>
+                    {children}
+                  </Content>
                 </Layout>
               </Layout>
             </PermissionsProvider>

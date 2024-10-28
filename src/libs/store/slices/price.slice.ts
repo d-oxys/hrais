@@ -1,4 +1,3 @@
-// src/libs/store/slices/groupKategori.slice.ts
 import { createSlice } from "@reduxjs/toolkit";
 
 export interface SalesData {
@@ -14,19 +13,30 @@ export interface SalesData {
   netto: number | null;
   dpp: number | null;
   ppn: number | null;
-  sales_percetange: number | null;
   sales_percentage: number | null;
+  sales_percetange: number | null;
 }
 
-export interface GroupKategoriState {
-  sales: SalesData[] | null;
-  salesDetail: SalesData[] | null;
+export interface PriceData {
+  range: string;
+  qty: number;
+  brutto: number;
+  disc: number;
+  netto: number;
+  sales_percentage: number;
+  sales_percetange: number;
+  salesData: SalesData[];
+}
+
+export interface PriceState {
+  sales: PriceData[] | null;
+  salesDetail: PriceData[] | null;
   loading: boolean;
   loadingDetail: boolean;
   error: unknown;
 }
 
-const initialState: GroupKategoriState = {
+const initialState: PriceState = {
   sales: null,
   salesDetail: null,
   loading: false,
@@ -34,8 +44,8 @@ const initialState: GroupKategoriState = {
   error: null,
 };
 
-const groupKategoriSlice = createSlice({
-  name: "groupKategori",
+const priceSlice = createSlice({
+  name: "price",
   initialState,
   reducers: {
     setSales(state, action) {
@@ -56,14 +66,12 @@ const groupKategoriSlice = createSlice({
   },
 });
 
-// Export the actions
 export const {
   setSales,
   setLoading,
   setError,
   setSalesDetail,
   setLoadingDetail,
-} = groupKategoriSlice.actions;
+} = priceSlice.actions;
 
-// Export the reducer
-export default groupKategoriSlice.reducer;
+export default priceSlice.reducer;
