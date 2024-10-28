@@ -27,6 +27,8 @@ const TableColorPage: React.FC<TableColorPageProps> = ({ colorData, priceData, l
   const [sortOrder, setSortOrder] = useState<'low' | 'high'>('low');
   const [limit, setLimit] = useState<number>(10);
 
+  console.log(colorData);
+  console.log(priceData);
   const handleRowClick = (record: ColorData) => {
     setIsModalVisible(true);
     setSelectedType('color');
@@ -66,9 +68,9 @@ const TableColorPage: React.FC<TableColorPageProps> = ({ colorData, priceData, l
   };
 
   // Filter and Sort Data
-  const filteredColorData = colorData.filter((item) => item.warna.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredColorData = colorData.filter((item) => item.color && item.color.toLowerCase().includes(searchTerm.toLowerCase()));
 
-  const filteredPriceData = priceData.filter((item) => item.range.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredPriceData = priceData.filter((item) => item.range && item.range.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const sortedColorData = [...filteredColorData].sort((a, b) => {
     if (sortOrder === 'low') {

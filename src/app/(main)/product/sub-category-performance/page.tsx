@@ -2,7 +2,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { Table, TableColumnsType, Modal, Pagination } from 'antd';
 import ProductTableComponent from '@root/app/components/Table/product';
-import { InfoCircleOutlined, TagOutlined, MoneyCollectOutlined, PercentageOutlined, EyeOutlined } from '@ant-design/icons';
+import { EyeOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '@root/libs/store';
 import { fetchSalesData, fetchSalesDataDetail } from '@root/libs/store/thunk/groupKategori';
 import { SalesData } from '@root/libs/store/slices/groupKategori.slice';
@@ -12,7 +12,7 @@ import dayjs, { Dayjs } from 'dayjs';
 
 const SubKategoriPerformancePage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { sales, salesDetail, loading, error, loadingDetail } = useAppSelector((state) => state.groupKategori);
+  const { sales, salesDetail, loading, loadingDetail } = useAppSelector((state) => state.groupKategori);
   const [filteredData, setFilteredData] = useState<SalesData[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
@@ -40,6 +40,8 @@ const SubKategoriPerformancePage: React.FC = () => {
   useEffect(() => {
     if (sales) {
       setFilteredData(sales);
+      // Reset to the first page when new data is fetched
+      setCurrentPage(1);
     }
   }, [sales]);
 
@@ -53,12 +55,6 @@ const SubKategoriPerformancePage: React.FC = () => {
           <div className='text-base font-semibold'>{record.subkategori}</div>
         </div>
       ),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
     },
     {
       title: 'Action',
@@ -68,71 +64,35 @@ const SubKategoriPerformancePage: React.FC = () => {
           <EyeOutlined className='text-gray-500 hover:text-gray-700 cursor-pointer ml-2' />
         </div>
       ),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
     },
     {
       title: 'Qty',
       dataIndex: 'qty',
       key: 'qty',
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
     },
     {
       title: 'Brutto',
       dataIndex: 'brutto',
       key: 'brutto',
       render: (value) => formatRupiah(value),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
     },
     {
       title: 'Discount',
       dataIndex: 'disc',
       key: 'discount',
       render: (value) => formatRupiah(value),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
     },
     {
       title: 'Netto',
       dataIndex: 'netto',
       key: 'netto',
       render: (value) => formatRupiah(value),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
     },
     {
       title: '% of Sales',
       dataIndex: 'sales_percetange',
       key: 'percentageOfSales',
       render: (value) => `${value ? value.toFixed(2) : 0}%`,
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: '#ffffff',
-          color: '#000000',
-        },
-      }),
     },
   ];
 
@@ -176,8 +136,7 @@ const SubKategoriPerformancePage: React.FC = () => {
     setIsModalVisible(false);
   };
 
-  const totalData = sales?.length || 0;
-  const totalPages = Math.ceil(totalData / limit);
+  const totalData = filteredData.length;
   const currentData = filteredData.slice((currentPage - 1) * limit, currentPage * limit);
 
   return (
@@ -195,6 +154,20 @@ const SubKategoriPerformancePage: React.FC = () => {
         filterContent={<FormPermission />}
         scroll={{ x: 'max-content' }}
       />
+      <Pagination
+        current={currentPage}
+        pageSize={limit}
+        total={totalData}
+        onChange={(page, pageSize) => {
+          setCurrentPage(page);
+          if (pageSize) {
+            setLimit(pageSize);
+          }
+        }}
+        showSizeChanger
+        pageSizeOptions={[10, 20, 50, 100]}
+        style={{ marginTop: '16px', textAlign: 'right' }}
+      />
       <Modal
         title={`Sales Detail for Group ${selectedGroup}`}
         visible={isModalVisible}
@@ -208,61 +181,59 @@ const SubKategoriPerformancePage: React.FC = () => {
         }}
       >
         {salesDetail && salesDetail.length > 0 ? (
-          <>
-            <Table
-              dataSource={salesDetail}
-              loading={loadingDetail}
-              columns={[
-                {
-                  title: 'Artikel',
-                  dataIndex: 'artikel',
-                  key: 'artikel',
-                  render: (text, record) => (
-                    <div className='flex items-center'>
-                      <img src='https://via.placeholder.com/50' alt='Artikel Image' className='w-12 h-12 mr-3 rounded-md' />
-                      <div className='flex-1'>
-                        <div className='text-base font-semibold'>{record.description}</div>
-                        <div className='text-sm'>{record.artikel}</div>
-                      </div>
+          <Table
+            dataSource={salesDetail}
+            loading={loadingDetail}
+            columns={[
+              {
+                title: 'Artikel',
+                dataIndex: 'artikel',
+                key: 'artikel',
+                render: (text, record) => (
+                  <div className='flex items-center'>
+                    <img src='https://via.placeholder.com/50' alt='Artikel Image' className='w-12 h-12 mr-3 rounded-md' />
+                    <div className='flex-1'>
+                      <div className='text-base font-semibold'>{record.description}</div>
+                      <div className='text-sm'>{record.artikel}</div>
                     </div>
-                  ),
-                },
-                {
-                  title: 'Description',
-                  dataIndex: 'description',
-                  key: 'description',
-                },
-                { title: 'Qty', dataIndex: 'qty', key: 'qty' },
-                {
-                  title: 'Brutto',
-                  dataIndex: 'brutto',
-                  key: 'brutto',
-                  render: (value) => formatRupiah(value),
-                },
-                {
-                  title: 'Discount',
-                  dataIndex: 'disc',
-                  key: 'disc',
-                  render: (value) => formatRupiah(value),
-                },
-                {
-                  title: 'Netto',
-                  dataIndex: 'netto',
-                  key: 'netto',
-                  render: (value) => formatRupiah(value),
-                },
-                {
-                  title: '% of Sales',
-                  dataIndex: 'sales_percentage',
-                  key: 'sales_percentage',
-                  render: (value) => `${value ? value.toFixed(2) : 0}%`,
-                },
-              ]}
-              rowKey='kode_brg'
-              pagination={false}
-              scroll={{ x: 'max-content' }}
-            />
-          </>
+                  </div>
+                ),
+              },
+              {
+                title: 'Description',
+                dataIndex: 'description',
+                key: 'description',
+              },
+              { title: 'Qty', dataIndex: 'qty', key: 'qty' },
+              {
+                title: 'Brutto',
+                dataIndex: 'brutto',
+                key: 'brutto',
+                render: (value) => formatRupiah(value),
+              },
+              {
+                title: 'Discount',
+                dataIndex: 'disc',
+                key: 'disc',
+                render: (value) => formatRupiah(value),
+              },
+              {
+                title: 'Netto',
+                dataIndex: 'netto',
+                key: 'netto',
+                render: (value) => formatRupiah(value),
+              },
+              {
+                title: '% of Sales',
+                dataIndex: 'sales_percentage',
+                key: 'sales_percentage',
+                render: (value) => `${value ? value.toFixed(2) : 0}%`,
+              },
+            ]}
+            rowKey='kode_brg'
+            pagination={false}
+            scroll={{ x: 'max-content' }}
+          />
         ) : (
           <p>No details available.</p>
         )}
