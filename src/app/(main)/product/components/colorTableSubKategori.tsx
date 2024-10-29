@@ -45,14 +45,13 @@ const TableColorGroupPage: React.FC<TableColorPageProps> = ({
   const [modalSortOrder, setModalSortOrder] = useState<"low" | "high">("low");
   const [modalSearchTerm, setModalSearchTerm] = useState("");
 
-  // Handle click row for Color Table
   const handleRowClick = (record: ColorData) => {
     setIsModalVisible(true);
     setSelectedColor(record.color);
 
     const params = {
-      group: "group",
-      kategori: group || "BAGS",
+      group: "subkategori",
+      kategori: group || "BAKCPACK",
       awal: awal,
       akhir: akhir,
       kdtoko: kdtoko,
@@ -64,13 +63,12 @@ const TableColorGroupPage: React.FC<TableColorPageProps> = ({
     dispatch(fetchSalesDataDetailExtra(params));
   };
 
-  // Handle click row for Price Table
   const handleRowClickPrice = (record: PriceData, index: number) => {
     setIsModalVisible(true);
     setSelectedPrice(record.group);
 
     const params = {
-      group: "group",
+      group: "subkategori",
       kategori: group || "BAKCPACK",
       awal: awal,
       akhir: akhir,
@@ -142,7 +140,7 @@ const TableColorGroupPage: React.FC<TableColorPageProps> = ({
     return sortedPriceData.slice(start, end);
   }, [sortedPriceData, currentPagePrice, pageSizePrice]);
 
-  // Filter dan Sort Data dalam Modal
+  // Filter and Sort Data in Modal Table
   const sortedSalesDetail = useMemo(() => {
     const filteredDetails =
       salesDetail?.filter((item) =>
@@ -189,7 +187,7 @@ const TableColorGroupPage: React.FC<TableColorPageProps> = ({
               <Table
                 columns={colorColumns}
                 dataSource={paginatedColorData}
-                rowKey="warna"
+                rowKey="color"
                 pagination={{
                   current: currentPage,
                   pageSize: pageSize,
@@ -223,6 +221,7 @@ const TableColorGroupPage: React.FC<TableColorPageProps> = ({
             </div>
           </div>
         </div>
+
         <Modal
           title={
             selectedColor

@@ -19,6 +19,8 @@ export interface SalesData {
 
 export interface PriceData {
   range: string;
+  group: string;
+  price_group: string;
   qty: number;
   brutto: number;
   disc: number;
@@ -30,6 +32,7 @@ export interface PriceData {
 
 export interface PriceState {
   sales: PriceData[] | null;
+  salesExpand: PriceData[] | null;
   salesDetail: PriceData[] | null;
   loading: boolean;
   loadingDetail: boolean;
@@ -39,6 +42,7 @@ export interface PriceState {
 const initialState: PriceState = {
   sales: null,
   salesDetail: null,
+  salesExpand: null,
   loading: false,
   loadingDetail: false,
   error: null,
@@ -54,6 +58,9 @@ const priceSlice = createSlice({
     setSalesDetail(state, action) {
       state.salesDetail = action.payload;
     },
+    setSalesExpand(state, action) {
+      state.salesExpand = action.payload;
+    },
     setLoading(state, action) {
       state.loading = action.payload;
     },
@@ -63,15 +70,23 @@ const priceSlice = createSlice({
     setError(state, action) {
       state.error = action.payload;
     },
+    resetPriceSales(state) {
+      state.sales = null;
+      state.salesDetail = null;
+      state.loading = false;
+      state.loadingDetail = false;
+    },
   },
 });
 
 export const {
   setSales,
+  setSalesExpand,
   setLoading,
   setError,
   setSalesDetail,
   setLoadingDetail,
+  resetPriceSales,
 } = priceSlice.actions;
 
 export default priceSlice.reducer;

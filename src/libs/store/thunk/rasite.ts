@@ -70,9 +70,9 @@ export const getSiteData = (
       if (brand) queryParams.append("brand", brand);
       if (offset !== undefined) queryParams.append("offset", offset.toString());
 
-      // Menggunakan Axios untuk request API EMACS
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const resp = await axios.get(
-        `https://emacs-api.duapuluhtiga.com/api/store/all?${queryParams.toString()}`
+        `${apiUrl}/api/master/channel?${queryParams.toString()}`
       );
       const siteData = resp.data;
 

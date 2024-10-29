@@ -1,17 +1,27 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-// Menyesuaikan tipe untuk mencocokkan respons API
+// Adjusted types to match the API response
 export interface UserType {
   id: number;
   name: string;
   nip: string;
 }
 
+export interface SubChannelType {
+  // New type for sub-channel
+  kdShow: string;
+  kdToko: string;
+  nmToko: string;
+}
+
 export interface SiteType {
-  site: string;
-  name: string;
+  kode: string; // Added kode property
+  kdToko: string; // Added kode property
+  nmToko: string; // Added kode property
+  nama: string; // Added nama property
   category: string;
   ip: string;
+  subChannel: SubChannelType[]; // Added subChannel property
 }
 
 export interface JobRoleType {
@@ -28,7 +38,7 @@ export interface RasiteDataType {
 
 export interface RasiteGroupState {
   rasitegroups: RasiteDataType[];
-  sitedata: SiteType[]; // Tambahkan state untuk menyimpan data Site
+  sitedata: SiteType[];
   loading: boolean;
   error: unknown;
   pagination: {
@@ -41,7 +51,7 @@ export interface RasiteGroupState {
 
 const initialState: RasiteGroupState = {
   rasitegroups: [],
-  sitedata: [], // State awal untuk menyimpan data Site
+  sitedata: [], // Initial state to store Site data
   loading: false,
   error: null,
   pagination: {
@@ -53,7 +63,7 @@ const initialState: RasiteGroupState = {
 };
 
 const rasitegroupSlice = createSlice({
-  name: 'rasitegroup',
+  name: "rasitegroup",
   initialState,
   reducers: {
     setLoading(state, action) {
@@ -80,6 +90,6 @@ const rasitegroupSlice = createSlice({
   },
 });
 
-// Ekspor action dan reducer
+// Export actions and reducer
 export const rasitegroupActions = rasitegroupSlice.actions;
 export default rasitegroupSlice.reducer;

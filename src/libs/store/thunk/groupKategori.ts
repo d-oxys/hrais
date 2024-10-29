@@ -1,14 +1,20 @@
 // src/libs/store/thunk/groupKategori.slice.ts
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import { setSales, setSalesDetail, setLoading, setError, setLoadingDetail } from '../slices/groupKategori.slice';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  setSales,
+  setSalesDetail,
+  setLoading,
+  setError,
+  setLoadingDetail,
+} from "../slices/groupKategori.slice";
 
 const dummySalesData = [
   {
-    kategori: 'Elektronik',
-    group: 'Smartphone',
-    subkategori: 'Android',
-    artikel: 'Artikel Dummy 1',
-    description: 'Deskripsi produk 1',
+    kategori: "Elektronik",
+    group: "Smartphone",
+    subkategori: "Android",
+    artikel: "Artikel Dummy 1",
+    description: "Deskripsi produk 1",
     qty: 10,
     brutto: 5000000,
     disc: 500000,
@@ -20,11 +26,11 @@ const dummySalesData = [
     sales_percentage: 20,
   },
   {
-    kategori: 'Pakaian',
-    group: 'Atasan',
-    subkategori: 'Kaos',
-    artikel: 'Artikel Dummy 2',
-    description: 'Deskripsi produk 2',
+    kategori: "Pakaian",
+    group: "Atasan",
+    subkategori: "Kaos",
+    artikel: "Artikel Dummy 2",
+    description: "Deskripsi produk 2",
     qty: 20,
     brutto: 2000000,
     disc: 200000,
@@ -37,12 +43,15 @@ const dummySalesData = [
   },
 ];
 
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
 export const fetchSalesData = createAsyncThunk(
-  'groupKategori/fetchSalesData',
+  "groupKategori/fetchSalesData",
   async (
     params: {
       awal: string;
       akhir: string;
+      brand?: string;
       limit: number;
       group: string;
       kategori: string;
@@ -52,12 +61,14 @@ export const fetchSalesData = createAsyncThunk(
   ) => {
     dispatch(setLoading(true));
 
-    const awal = params.awal ?? '2023-01-01';
-    const akhir = params.akhir ?? '2023-12-31';
+    const awal = params.awal ?? "2023-01-01";
+    const akhir = params.akhir ?? "2023-12-31";
 
     try {
-      const kdtokoParam = params.kdtoko ? `&kdtoko=${params.kdtoko.join(',')}` : '';
-      const url = `https://emacs-api.duapuluhtiga.com/api/sales/all/product/${params.group}/${params.kategori}?awal=${awal}&akhir=${akhir}&limit=${params.limit}${kdtokoParam}`;
+      const kdtokoParam = params.kdtoko
+        ? `&kdtoko=${params.kdtoko.join(",")}`
+        : "";
+      const url = `${apiUrl}/api/sales/all/product/${params.group}/${params.kategori}?awal=${awal}&akhir=${akhir}&limit=${params.limit}&brand=${params.brand}${kdtokoParam}`;
 
       const response = await fetch(url);
 
@@ -69,9 +80,13 @@ export const fetchSalesData = createAsyncThunk(
       const data = await response.json();
       dispatch(setSales(data));
     } catch (error) {
-      console.error('Error fetching sales data:', error);
+      console.error("Error fetching sales data:", error);
       dispatch(setSales(dummySalesData));
-      dispatch(setError(error instanceof Error ? error.message : 'An unknown error occurred'));
+      dispatch(
+        setError(
+          error instanceof Error ? error.message : "An unknown error occurred"
+        )
+      );
     } finally {
       dispatch(setLoading(false));
     }
@@ -80,7 +95,7 @@ export const fetchSalesData = createAsyncThunk(
 
 // Modifikasi fetchSalesDataDetail thunk
 export const fetchSalesDataDetail = createAsyncThunk(
-  'groupKategori/fetchSalesDataDetail',
+  "groupKategori/fetchSalesDataDetail",
   async (
     params: {
       awal: string;
@@ -94,12 +109,14 @@ export const fetchSalesDataDetail = createAsyncThunk(
   ) => {
     dispatch(setLoadingDetail(true));
 
-    const awal = params.awal ?? '2023-01-01';
-    const akhir = params.akhir ?? '2023-12-31';
+    const awal = params.awal ?? "2023-01-01";
+    const akhir = params.akhir ?? "2023-12-31";
 
     try {
-      const kdtokoParam = params.kdtoko ? `&kdtoko=${params.kdtoko.join(',')}` : '';
-      const url = `https://emacs-api.duapuluhtiga.com/api/sales/all/product/${params.group}/${params.kategori}?awal=${awal}&akhir=${akhir}&limit=${params.limit}${kdtokoParam}`;
+      const kdtokoParam = params.kdtoko
+        ? `&kdtoko=${params.kdtoko.join(",")}`
+        : "";
+      const url = `${apiUrl}/api/sales/all/product/${params.group}/${params.kategori}?awal=${awal}&akhir=${akhir}&limit=${params.limit}${kdtokoParam}`;
 
       const response = await fetch(url);
 
@@ -111,9 +128,62 @@ export const fetchSalesDataDetail = createAsyncThunk(
       const data = await response.json();
       dispatch(setSalesDetail(data));
     } catch (error) {
-      console.error('Error fetching sales data detail:', error);
+      console.error("Error fetching sales data detail:", error);
       dispatch(setSalesDetail(dummySalesData));
-      dispatch(setError(error instanceof Error ? error.message : 'An unknown error occurred'));
+      dispatch(
+        setError(
+          error instanceof Error ? error.message : "An unknown error occurred"
+        )
+      );
+    } finally {
+      dispatch(setLoadingDetail(false));
+    }
+  }
+);
+
+export const fetchSalesDataDetailExtra = createAsyncThunk(
+  "groupKategori/fetchSalesDataDetailExtra",
+  async (
+    params: {
+      awal: string;
+      akhir: string;
+      limit: number;
+      group: string;
+      option: string;
+      value: string;
+      kategori: string;
+      kdtoko?: string[];
+    },
+    { dispatch }
+  ) => {
+    dispatch(setLoadingDetail(true));
+
+    const awal = params.awal ?? "2023-01-01";
+    const akhir = params.akhir ?? "2023-12-31";
+
+    try {
+      const kdtokoParam = params.kdtoko
+        ? `&kdtoko=${params.kdtoko.join(",")}`
+        : "";
+      const url = `${apiUrl}/api/sales/all/product/${params.group}/${params.kategori}/${params.option}/${params.value}/?awal=${awal}&akhir=${akhir}&limit=${params.limit}${kdtokoParam}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Failed to fetch sales data detail: ${errorMessage}`);
+      }
+
+      const data = await response.json();
+      dispatch(setSalesDetail(data));
+    } catch (error) {
+      console.error("Error fetching sales data detail:", error);
+      dispatch(setSalesDetail(dummySalesData));
+      dispatch(
+        setError(
+          error instanceof Error ? error.message : "An unknown error occurred"
+        )
+      );
     } finally {
       dispatch(setLoadingDetail(false));
     }

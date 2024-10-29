@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export interface SalesData {
   kategori: string;
@@ -45,7 +45,7 @@ const initialState: ColorState = {
 };
 
 const colorSlice = createSlice({
-  name: 'color',
+  name: "color",
   initialState,
   reducers: {
     setSales(state, action) {
@@ -63,9 +63,20 @@ const colorSlice = createSlice({
     setError(state, action) {
       state.error = action.payload;
     },
+    resetColorSales(state) {
+      state.sales = null;
+      state.loading = false;
+    },
   },
 });
 
-export const { setSales, setLoading, setError, setSalesDetail, setLoadingDetail } = colorSlice.actions;
+export const {
+  setSales,
+  setLoading,
+  setError,
+  setSalesDetail,
+  setLoadingDetail,
+  resetColorSales,
+} = colorSlice.actions;
 
 export default colorSlice.reducer;

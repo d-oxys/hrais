@@ -1,4 +1,3 @@
-// File: layout.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import { ConfigProvider, Layout, Dropdown, Menu, Space } from "antd";
@@ -19,6 +18,7 @@ import {
 } from "@ant-design/icons";
 import styles from "./layout.module.scss";
 import { PermissionsProvider } from "@root/libs/contexts/PermissionsContext";
+import Navigation from "../components/navigation";
 
 const { Header, Sider, Content } = Layout;
 
@@ -33,7 +33,6 @@ const DashboardLayout = ({ children }: { children: any }) => {
     setCollapsed(!collapsed);
   };
 
-  // Fetch roles data with access token
   // useEffect(() => {
   //   const fetchRolesData = async () => {
   //     try {
@@ -100,6 +99,10 @@ const DashboardLayout = ({ children }: { children: any }) => {
     },
     {
       key: "2",
+      label: <div onClick={() => route.push("")}>Change Password</div>,
+    },
+    {
+      key: "3",
       label: (
         <div
           onClick={() =>
@@ -112,6 +115,14 @@ const DashboardLayout = ({ children }: { children: any }) => {
         </div>
       ),
     },
+  ];
+
+  const navItems = [
+    { key: "sales", label: "Sales", hasSubmenu: true },
+    { key: "finance", label: "Finance & Accounting", hasSubmenu: true },
+    { key: "warehouse", label: "Warehouse", hasSubmenu: true },
+    { key: "audit", label: "Audit", hasSubmenu: true },
+    { key: "purchasing", label: "Purchasing", hasSubmenu: true },
   ];
 
   return (
@@ -127,70 +138,11 @@ const DashboardLayout = ({ children }: { children: any }) => {
         <AuthProvider>
           {!loading ? (
             <PermissionsProvider value={permissions}>
-              {" "}
-              {/* Tambahkan PermissionsProvider */}
               <Layout style={{ minHeight: "100vh" }} className="font-Poppins">
-                <Header
-                  className="bg-white flex border border-b-[#5B5B5B]/25"
-                  style={{ padding: 0, position: "sticky", top: 0, zIndex: 1 }}
-                >
-                  <div className="min-w-[200px] px-5">
-                    <div className="flex gap-4 cursor-pointer items-center justify-center">
-                      <Image
-                        src="/assets/images/23-apps-header-logo.svg"
-                        width={100}
-                        height={40}
-                        alt="Logo Header"
-                      />
-                      <div>
-                        <CaretDownOutlined />
-                      </div>
-                    </div>
-                  </div>
-                  {/* <div className='flex justify-between w-full'>
-                    <div className='flex gap-7 px-6'>
-                      <div>
-                        <LeftOutlined />
-                      </div>
-                      <div>
-                        <RightOutlined />
-                      </div>
-                    </div>
-                    <div className='flex px-6 justify-center gap-6'>
-                      <div className='flex gap-2'>
-                        <div>
-                          <MailOutlined className='rounded-full border border-[#5B5B5B]/25 p-2 cursor-pointer' />
-                        </div>
-                        <div>
-                          <CalendarOutlined className='rounded-full border border-[#5B5B5B]/25 p-2 cursor-pointer' />
-                        </div>
-                        <div className='flex'>
-                          <div className='absolute -top-3 ml-4'>
-                            <span className='bg-red-500 text-white p-1 rounded-full text-xs'>9+</span>
-                          </div>
-                          <div>
-                            <BellOutlined className='rounded-full border border-[#5B5B5B]/25 p-2 cursor-pointer' />
-                          </div>
-                        </div>
-                      </div>
-                      <div className='flex'>
-                        <Dropdown menu={{ items }}>
-                          <a onClick={(e) => e.preventDefault()}>
-                            <Space className='bg-blue-200 rounded-full m-3 h-[30px] w-[30px] flex justify-center text-center'>A</Space>
-                          </a>
-                        </Dropdown>
-                      </div>
-                    </div>
-                  </div> */}
+                <Header className="bg-white p-0 sticky top-0 z-40">
+                  <Navigation />
                 </Header>
                 <Layout className="bg-[#EEEEEE]">
-                  {/* <Sider trigger={null} collapsible={true} collapsed={collapsed} theme='light'>
-                    <div className='flex flex-col justify-between h-full'>
-                      <div className={styles['menu-list']}>
-                        <MenuComponent menus={menu} />
-                      </div>
-                    </div>
-                  </Sider> */}
                   <Content style={{ margin: "16px", background: "#EEEEEE" }}>
                     {children}
                   </Content>
