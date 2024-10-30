@@ -72,7 +72,7 @@ export const getSiteData = (
 
       // Menggunakan Axios untuk request API EMACS
       const resp = await axios.get(
-        `https://emacs-api.duapuluhtiga.com/api/store/all?${queryParams.toString()}`
+        `https://emacs-api.duapuluhtiga.com/api/master/channel?${queryParams.toString()}`
       );
       const siteData = resp.data;
 

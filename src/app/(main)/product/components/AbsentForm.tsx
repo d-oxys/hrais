@@ -14,7 +14,7 @@ const AbsentForm = () => {
   const { sitedata } = useAppSelector((state) => state.rasiteGroup);
 
   // const channelOptions = ['ENABLER', 'KONSI', 'STORE', 'WHOLESALE', 'B2B', 'ONLINEHQ'];
-  const channelOptions = [ 'STORE', 'ONLINEHQ'];
+  const channelOptions = [ 'OS', 'ONLINEHQ'];
 
   useEffect(() => {
     dispatch(getSiteData());
@@ -29,6 +29,7 @@ const AbsentForm = () => {
   const filteredSites = sitedata
     .filter((site) => selectedChannels.includes(site.category))
     .filter((site) => site.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
 
   const handleSiteChange = (checkedValues: string[]) => {
     setSelectedSitesState(checkedValues);
