@@ -25,7 +25,7 @@ export const fetchProducts = (params: FetchProductsParams = {}) => {
       if (params.kdtoko) queryParams.append("kdtoko", params.kdtoko);
 
       const response = await axios.get(
-        `${API_URL}/api/sales/product/site/group/all?${queryParams.toString()}`
+        `${API_URL}/api/sales/product/site/group/all?${queryParams.toString()}&limit=100`
       );
       dispatch(productActions.setProducts(response.data.items));
     } catch (err: unknown) {

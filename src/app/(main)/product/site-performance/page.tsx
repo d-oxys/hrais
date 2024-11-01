@@ -37,6 +37,7 @@ const App: React.FC = () => {
   const products = useAppSelector((state) => state.product.products);
 
   useEffect(() => {
+    // Memanggil fetchProducts saat awal atau akhir diperbarui
     dispatch(fetchProducts({ awal, akhir, kdtoko }));
   }, [awal, akhir, kdtoko, dispatch]);
 
