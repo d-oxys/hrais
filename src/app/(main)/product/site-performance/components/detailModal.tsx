@@ -1,6 +1,6 @@
 // DetailModal.tsx
 import React from "react";
-import { Modal, Table } from "antd";
+import { Modal, Table, Row, Col } from "antd";
 import {
   BarChart,
   Bar,
@@ -9,6 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import Card from "./card";
 import type { ColumnsType } from "antd/es/table";
 
 interface DataType {
@@ -48,6 +49,12 @@ const salesData = [
   { priceRange: "$41-$50", sales: 80 },
   { priceRange: "$51-$60", sales: 80 },
   { priceRange: "$61-$70", sales: 180 },
+];
+
+const cardData = [
+  { title: "Group", priceRange: "$10-$20", bestColor: "Red", salesPercentage: 30, lostSalesPercentage: 5 },
+  { title: "Category", priceRange: "$20-$30", bestColor: "Blue", salesPercentage: 25, lostSalesPercentage: 10 },
+  { title: "Sub Category", priceRange: "$15-$25", bestColor: "Green", salesPercentage: 20, lostSalesPercentage: 8 },
 ];
 
 const table1Columns: ColumnsType<{
@@ -145,11 +152,17 @@ const DetailModal: React.FC<DetailModalProps> = ({
         />
       </div>
 
+      {/* Dynamic Card Display */}
+      <Row gutter={[16, 16]} className="mt-4">
+        {cardData.map((card, index) => (
+          <Col xs={24} sm={12} lg={8} key={index}>
+            <Card {...card} />
+          </Col>
+        ))}
+      </Row>
+
       <div className="mt-8">
-        {/* <h3 className="text-lg font-semibold mb-4">
-          Artikel Sales by Price Range
-        </h3>
-        <ResponsiveContainer width="100%" height={300}>
+        {/* <ResponsiveContainer width="100%" height={300}>
           <BarChart data={salesData}>
             <XAxis dataKey="priceRange" />
             <YAxis />
@@ -160,29 +173,13 @@ const DetailModal: React.FC<DetailModalProps> = ({
 
         <div className="mt-8">
           <p className="block capitalize">
-            Artikel{" "}
-            <span className="p-1 rounded-lg bg-slate-100">$description</span>{" "}
-            menyumbang % of sales dari SKU{" "}
-            <span className="p-1 rounded-lg bg-slate-100">$artikel</span> dan
-            menyumbang % of sales untuk site{" "}
-            <span className="p-1 rounded-lg bg-slate-100">$nmSite</span> warna
-            artikel{" "}
-            <span className="p-1 rounded-lg bg-neutral-200">$warna</span>{" "}
-            menyumbang % of sales{" "}
-            <span className="p-1 rounded-lg bg-slate-100">75%</span>
+            Artikel <span className="p-1 rounded-lg bg-slate-100">$description</span> menyumbang % of sales dari SKU <span className="p-1 rounded-lg bg-slate-100">$artikel</span> dan menyumbang % of sales untuk site <span className="p-1 rounded-lg bg-slate-100">$nmSite</span> warna artikel <span className="p-1 rounded-lg bg-neutral-200">$warna</span> menyumbang % of sales <span className="p-1 rounded-lg bg-slate-100">75%</span>
           </p>
           <p className="block capitalize mt-4">
-            Artikel tersebut bisa menyumbang{" "}
-            <span className="p-1 rounded-lg bg-slate-100">$percent</span> % of
-            Sales, maka artikel tersebut dapat di suggest dialihkan ke{" "}
-            <span className="p-1 rounded-lg bg-slate-100">$Site</span> agar
-            lebih cocok dan jadi Top Performance
+            Artikel tersebut bisa menyumbang <span className="p-1 rounded-lg bg-slate-100">$percent</span> % of Sales, maka artikel tersebut dapat di suggest dialihkan ke <span className="p-1 rounded-lg bg-slate-100">$Site</span> agar lebih cocok dan jadi Top Performance
           </p>
           <p className="block capitalize">
-            Berdasarkan performance tersebut dirasa kurang perform karena range
-            harga terlalu mahal dan berdasarkan inventory performance, artikel
-            tersebut terdapat lost sales sebesar{" "}
-            <span className="p-1 rounded-lg bg-slate-100">$totalLostSales</span>
+            Berdasarkan performance tersebut dirasa kurang perform karena range harga terlalu mahal dan berdasarkan inventory performance, artikel tersebut terdapat lost sales sebesar <span className="p-1 rounded-lg bg-slate-100">$totalLostSales</span>
           </p>
         </div>
       </div>
