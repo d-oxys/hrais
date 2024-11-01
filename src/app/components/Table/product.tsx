@@ -92,7 +92,8 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   const [searchText, setSearchText] = useState("");
   const [limit, setLimit] = useState(limitOptions[0] || 10);
   const [radioValue, setRadioValue] = useState<string>("mid");
-  const [selectedBrand, setSelectedBrand] = useState<string>("Brand");
+  const [selectedBrand, setSelectedBrand] = useState<string>("All Brands");
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
 
   useEffect(() => {
@@ -170,9 +171,10 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     setRadioValue(e.target.value);
   };
 
-  const handleBrandChange = (value: string) => {
-    setSelectedBrand(value);
-    if (onBrandChange) onBrandChange(value);
+  const handleBrandChange = (brand: string, icon: string) => {
+    setSelectedBrand(brand);
+    setSelectedIcon(icon);
+    if (onBrandChange) onBrandChange(brand);
   };
 
   const handleExpand = (expanded: boolean, record: any) => {
@@ -199,7 +201,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
             <RangePicker
               value={selectedRange}
               onChange={handleDateChange}
-              className={`w-52 ${styles.rangePickerPlaceholder}`}
+              className={`w-64 ${styles.rangePickerPlaceholder}`}
               renderExtraFooter={() => (
                 <div className="my-4">
                   <div className="flex space-x-2 mt-2">
@@ -232,28 +234,79 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
               overlay={
                 <Menu>
                   <Menu.Item
-                    key="bodypack"
-                    onClick={() => handleBrandChange("Bodypack")}
+                    key="all"
+                    onClick={() => handleBrandChange("", "")}
+                    className="w-full"
                   >
-                    <ShoppingCartOutlined style={{ marginRight: 8 }} /> Bodypack
+                    <div className="flex">
+                      <DownloadOutlined style={{ marginRight: 8 }} />
+                      <div>All Brands</div>
+                    </div>
+                  </Menu.Item>
+                  <Menu.Item
+                    key="bodypack"
+                    onClick={() =>
+                      handleBrandChange(
+                        "Bodypack",
+                        "/assets/images/logo-bp.jpeg"
+                      )
+                    }
+                    className="w-full"
+                  >
+                    <div className="flex">
+                      <img
+                        src="/assets/images/logo-bp.jpeg"
+                        alt="Bodypack Logo"
+                        style={{ width: 20, height: 20, marginRight: 8 }}
+                      />
+                      <div>Bodypack</div>
+                    </div>
                   </Menu.Item>
                   <Menu.Item
                     key="exsport"
-                    onClick={() => handleBrandChange("Esxport")}
+                    onClick={() =>
+                      handleBrandChange(
+                        "Exsport",
+                        "/assets/images/exsport-logo.jpg"
+                      )
+                    }
+                    className="w-full"
                   >
-                    <ExportOutlined style={{ marginRight: 8 }} /> Exsport
+                    <div className="flex">
+                      <img
+                        src="/assets/images/exsport-logo.jpg"
+                        alt="Exsport Logo"
+                        style={{ width: 20, height: 20, marginRight: 8 }}
+                      />
+                      <div>Exsport</div>
+                    </div>
                   </Menu.Item>
                 </Menu>
               }
             >
-              <Button icon={<DownloadOutlined />}>{selectedBrand}</Button>
+              <Button
+                className="flex items-center"
+                icon={
+                  selectedIcon ? (
+                    <img
+                      src={selectedIcon}
+                      alt="Brand Icon"
+                      style={{ width: 20, height: 20 }}
+                    />
+                  ) : (
+                    <DownloadOutlined />
+                  )
+                }
+              >
+                {selectedBrand}
+              </Button>
             </Dropdown>
 
             <Button
               icon={<FilterOutlined />}
               onClick={() => setIsModalVisible(true)}
             >
-              Filter
+              Pilih Site
             </Button>
 
             <Input

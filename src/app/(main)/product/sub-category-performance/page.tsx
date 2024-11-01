@@ -124,7 +124,7 @@ const SubKategoriPerformancePage: React.FC = () => {
     },
     {
       title: "% of Sales",
-      dataIndex: "sales_percetange",
+      dataIndex: "sales_percentage",
       key: "percentageOfSales",
       render: (value) => `${value ? value.toFixed(2) : 0}%`,
     },
@@ -216,7 +216,7 @@ const SubKategoriPerformancePage: React.FC = () => {
 
     const params = {
       group: "subkategori",
-      kategori: "all",
+      kategori: "",
       awal,
       akhir,
       limit: 1000,
@@ -241,7 +241,7 @@ const SubKategoriPerformancePage: React.FC = () => {
         ? selectedRange[1].format("YYYY-MM-DD")
         : "2023-12-31";
     const params = {
-      group: "kategori",
+      group: "subkategori",
       kategori: "",
       awal,
       akhir,

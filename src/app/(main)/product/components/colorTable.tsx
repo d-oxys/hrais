@@ -70,6 +70,8 @@ const TableColorPage: React.FC<TableColorPageProps> = ({
       limit: 1000,
     };
 
+    console.log(params);
+
     dispatch(fetchSalesDataDetail(params));
   };
 
@@ -242,11 +244,11 @@ const TableColorPage: React.FC<TableColorPageProps> = ({
                   },
                   {
                     title: "% of Sales",
-                    dataIndex: "sales_percetange",
-                    key: "sales_percetange",
+                    dataIndex: "sales_percentage",
+                    key: "sales_percentage",
                     render: (value) => `${value ? value.toFixed(2) : 0}%`,
                     sorter: (a, b) =>
-                      (a.sales_percetange || 0) - (b.sales_percetange || 0),
+                      (a.sales_percentage || 0) - (b.sales_percentage || 0),
                     onHeaderCell: () => ({
                       style: {
                         backgroundColor: "#ffffff",
@@ -304,19 +306,19 @@ const TableColorPage: React.FC<TableColorPageProps> = ({
                   },
                   {
                     title: "% of Sales",
-                    dataIndex: "sales_percetange",
-                    key: "sales_percetange",
+                    dataIndex: "sales_percentage",
+                    key: "sales_percentage",
                     onHeaderCell: () => ({
                       style: {
                         backgroundColor: "#ffffff",
                         color: "#000000",
                       },
                     }),
-                    render: (value) => `${value.toFixed(2)}%`,
+                    render: (value) => `${value ? value.toFixed(2) : 0}%`,
                   },
                 ]}
                 dataSource={priceData}
-                rowKey="group"
+                rowKey="price"
                 pagination={false}
                 loading={loadingPrice}
                 scroll={{ x: "max-content" }}
@@ -395,7 +397,7 @@ const TableColorPage: React.FC<TableColorPageProps> = ({
                   title: "% of Sales",
                   dataIndex: "sales_percentage",
                   key: "sales_percentage",
-                  render: (value) => `${value.toFixed(2)}%`,
+                  render: (value) => `${value ? value.toFixed(2) : 0}%`,
                 },
               ]}
               rowKey="artikel"

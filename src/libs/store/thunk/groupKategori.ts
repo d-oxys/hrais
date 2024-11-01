@@ -22,7 +22,6 @@ const dummySalesData = [
     netto: 4500000,
     dpp: 4000000,
     ppn: 500000,
-    sales_percetange: 20,
     sales_percentage: 20,
   },
   {
@@ -38,7 +37,6 @@ const dummySalesData = [
     netto: 1800000,
     dpp: 1600000,
     ppn: 200000,
-    sales_percetange: 10,
     sales_percentage: 10,
   },
 ];

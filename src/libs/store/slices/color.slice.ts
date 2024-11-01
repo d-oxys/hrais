@@ -14,7 +14,7 @@ export interface SalesData {
   dpp: number | null;
   ppn: number | null;
   sales_percentage: number | null;
-  sales_percetange: number | null;
+  sales_percentage: number | null;
 }
 
 export interface ColorData {
@@ -25,7 +25,7 @@ export interface ColorData {
   disc: number;
   netto: number;
   sales_percentage: number;
-  sales_percetange: number;
+  sales_percentage: number;
 }
 
 export interface ColorState {

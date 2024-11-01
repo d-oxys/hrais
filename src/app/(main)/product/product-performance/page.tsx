@@ -34,15 +34,13 @@ const ProductPerformancePage: React.FC = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [limit, setLimit] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1); // State untuk halaman saat ini
-  const [totalData, setTotalData] = useState(0); // State untuk total data
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalData, setTotalData] = useState(0);
   const selectedSites = useAppSelector((state) => state.selectedSites.sites);
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [selectedRange, setSelectedRange] = useState<
     [Dayjs | null, Dayjs | null]
   >([null, null]);
-
-  console.log(sales);
 
   useEffect(() => {
     const awal =
@@ -62,7 +60,7 @@ const ProductPerformancePage: React.FC = () => {
       kategori: "all",
       awal,
       akhir,
-      limit: 1000,
+      limit: 10000,
       brand: selectedBrand,
     };
     const paramsColor = {
@@ -86,6 +84,7 @@ const ProductPerformancePage: React.FC = () => {
   useEffect(() => {
     if (sales) {
       setFilteredData(sales);
+      setTotalData(sales.length);
     }
   }, [sales]);
 
@@ -212,7 +211,7 @@ const ProductPerformancePage: React.FC = () => {
       kategori: "all",
       awal,
       akhir,
-      limit: 1000,
+      limit: 10000,
       brand: brand,
       kdtoko: selectedSites,
     };
@@ -238,6 +237,7 @@ const ProductPerformancePage: React.FC = () => {
     setIsModalVisible(false);
     setSelectedArticle(null);
   };
+
   const handleModalOk = () => {
     console.log(selectedSites);
     const awal =
@@ -257,7 +257,7 @@ const ProductPerformancePage: React.FC = () => {
       kategori: "all",
       awal,
       akhir,
-      limit: 1000,
+      limit: 10000,
       kdtoko: selectedSites,
       brand: selectedBrand,
     };
@@ -266,7 +266,7 @@ const ProductPerformancePage: React.FC = () => {
       awal,
       akhir,
       kdtoko: selectedSites,
-      limit: 1000,
+      limit: 10000,
       brand: selectedBrand,
     };
 
@@ -297,6 +297,36 @@ const ProductPerformancePage: React.FC = () => {
     }
   };
 
+  const currentData = filteredData.slice(
+    (currentPage - 1) * limit,
+    currentPage * limit
+  );
+
+  const expandedRowRender = (record: SalesData) => {
+    return (
+      <div>
+        <p>
+          <strong>Detail:</strong> {record.description}
+        </p>
+        <p>
+          <strong>Harga:</strong> {record.artikel}
+        </p>
+      </div>
+    );
+  };
+
+  const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
+
+  const handleExpand = (expanded: boolean, record: SalesData) => {
+    if (expanded) {
+      // Jika baris diklik untuk diperluas, hanya baris ini yang akan ter-expand
+      setExpandedRowKeys([record.artikel]);
+    } else {
+      // Jika baris diklik untuk ditutup, kosongkan expandedRowKeys
+      setExpandedRowKeys([]);
+    }
+  };
+
   return (
     <Suspense>
       <h1 className="text-2xl font-semibold mb-8">
@@ -306,7 +336,7 @@ const ProductPerformancePage: React.FC = () => {
       <ProductTableComponent
         isLoading={loading}
         columns={columns}
-        data={filteredData}
+        data={currentData}
         onFilterClick={handleModalOk}
         onSearch={handleSearch}
         onDateChange={handleDateChange}
@@ -319,6 +349,12 @@ const ProductPerformancePage: React.FC = () => {
           total: totalData,
           onChange: handlePageChange,
         }}
+        // expandedRowRender={expandedRowRender}
+        // expandable={{
+        //   expandedRowRender,
+        //   expandedRowKeys: expandedRowKeys,
+        //   onExpand: handleExpand,
+        // }}
         filterContent={<FormPermission />}
       />
       <TableColorPage

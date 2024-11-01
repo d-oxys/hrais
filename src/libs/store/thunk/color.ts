@@ -19,7 +19,7 @@ const dummyColorData: ColorData[] = [
     disc: 1000000,
     netto: 9000000,
     sales_percentage: 20,
-    sales_percetange: 20,
+    sales_percentage: 20,
   },
   {
     warna: "Biru",
@@ -29,7 +29,7 @@ const dummyColorData: ColorData[] = [
     disc: 2000000,
     netto: 13000000,
     sales_percentage: 15,
-    sales_percetange: 15,
+    sales_percentage: 15,
   },
 ];
 

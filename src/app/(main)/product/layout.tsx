@@ -42,6 +42,12 @@ const ProductLayout: React.FC<ProductLayoutProps> = ({ children }) => {
           >
             Sub Category Performance
           </button>
+          <button
+            className={`${pathname === "/product/site-performance" ? "bg-white text-black font-bold" : "text-white"} rounded-t-md transition p-4`}
+            onClick={() => handleMenuClick("site-performance")}
+          >
+            Site Performance
+          </button>
         </nav>
       </header>
       <main className="p-6 bg-white flex-1">{children}</main>

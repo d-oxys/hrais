@@ -1,6 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@root/libs/store";
-import { Checkbox, Row, Col, Input } from "antd";
+import { Checkbox, Row, Col, Input, Skeleton } from "antd";
 import { useEffect, useState } from "react";
 import styles from "./component.module.scss";
 import { getSiteData } from "@root/libs/store/thunk/rasite";
@@ -12,7 +12,7 @@ const AbsentForm = () => {
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
   const [selectedSites, setSelectedSitesState] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const { sitedata } = useAppSelector((state) => state.rasiteGroup);
+  const { sitedata, loading } = useAppSelector((state) => state.rasiteGroup);
   const [subChannels, setSubChannels] = useState<any[]>([]);
 
   // Channel Options
@@ -54,46 +54,40 @@ const AbsentForm = () => {
     debouncedSearch(e.target.value);
   };
 
-  const cleanSiteName = (name: string) => {
-    const prefixesToRemove = ["ST", "EG", "BP", "EX", "SH"];
-    const parts = name.split(" ");
-    const cleanedName = parts
-      .filter((part) => !prefixesToRemove.includes(part))
-      .join(" ");
-    return cleanedName.trim();
-  };
-
   return (
     <div className="container mx-auto px-4">
       <div className="flex flex-row md:flex-col gap-4 w-full">
         {/* Channels Section */}
         <div className="mt-4 rounded-xl p-4 w-full md:w-3/4 bg-white shadow-sm">
           <div className="font-bold text-lg mb-4">Channels</div>
-          <Checkbox.Group
-            onChange={handleChannelChange}
-            value={selectedChannels}
-          >
-            <Row gutter={[0, 8]} className="w-full">
-              {channelOptions.map((option) => (
-                <Col span={24} key={option} className="w-full">
-                  <div
-                    className={`transition-colors duration-200 ease-in-out
-                      ${selectedChannels.includes(option) ? "bg-blue-100" : "hover:bg-gray-50"} 
-                      p-2 rounded w-full
-                    `}
-                  >
-                    <Checkbox value={option} className="w-full">
-                      <span className="ml-2">{option}</span>
-                    </Checkbox>
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          </Checkbox.Group>
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 2 }} />
+          ) : (
+            <Checkbox.Group
+              onChange={handleChannelChange}
+              value={selectedChannels}
+            >
+              <Row gutter={[0, 8]} className="w-full">
+                {channelOptions.map((option) => (
+                  <Col span={24} key={option} className="w-full">
+                    <div
+                      className={`transition-colors duration-200 ease-in-out
+                        ${selectedChannels.includes(option) ? "bg-blue-100" : "hover:bg-gray-50"} 
+                        p-2 rounded w-full
+                      `}
+                    >
+                      <Checkbox value={option} className="w-full">
+                        <span className="ml-2">{option}</span>
+                      </Checkbox>
+                    </div>
+                  </Col>
+                ))}
+              </Row>
+            </Checkbox.Group>
+          )}
         </div>
 
         {/* Sub Channels Section */}
-
         <div className="mt-4 bg-white rounded-xl p-4 w-full md:w-3/4 shadow-sm">
           <div className="font-bold text-lg mb-4">Sub Channels:</div>
           <Input
@@ -101,32 +95,36 @@ const AbsentForm = () => {
             onChange={handleSearchInputChange}
             className="w-full mb-4"
           />
-          {subChannels.length > 0 && (
-            <Checkbox.Group
-              onChange={handleSiteChange}
-              value={selectedSites}
-              className="w-full"
-            >
-              <Row gutter={[16, 16]} className="w-full">
-                {subChannels.map((sub) => (
-                  <Col
-                    xs={24}
-                    sm={24}
-                    md={12}
-                    key={sub.kdToko}
-                    className="w-full"
-                  >
-                    <div className="hover:bg-gray-50 p-2 rounded transition-colors duration-200">
-                      <Checkbox value={sub.kdToko} className="w-full">
-                        <span className="ml-2">
-                          {sub.kdToko} - {sub.nmToko}
-                        </span>
-                      </Checkbox>
-                    </div>
-                  </Col>
-                ))}
-              </Row>
-            </Checkbox.Group>
+          {loading ? (
+            <Skeleton active paragraph={{ rows: 4 }} />
+          ) : (
+            subChannels.length > 0 && (
+              <Checkbox.Group
+                onChange={handleSiteChange}
+                value={selectedSites}
+                className="w-full"
+              >
+                <Row gutter={[16, 16]} className="w-full">
+                  {subChannels.map((sub) => (
+                    <Col
+                      xs={24}
+                      sm={24}
+                      md={12}
+                      key={sub.kdToko}
+                      className="w-full"
+                    >
+                      <div className="hover:bg-gray-50 p-2 rounded transition-colors duration-200">
+                        <Checkbox value={sub.kdToko} className="w-full">
+                          <span className="ml-2">
+                            {sub.kdToko} - {sub.nmToko}
+                          </span>
+                        </Checkbox>
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
+              </Checkbox.Group>
+            )
           )}
         </div>
       </div>

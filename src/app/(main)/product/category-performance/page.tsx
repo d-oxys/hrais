@@ -130,7 +130,7 @@ const KategoriPerformancePage: React.FC = () => {
     },
     {
       title: "% of Sales",
-      dataIndex: "sales_percetange",
+      dataIndex: "sales_percentage",
       key: "percentageOfSales",
       render: (value) => `${value ? value.toFixed(2) : 0}%`,
     },
@@ -203,7 +203,7 @@ const KategoriPerformancePage: React.FC = () => {
         : "2023-12-31";
     const params = {
       group: "kategori",
-      kategori: "all",
+      kategori: "",
       awal,
       akhir,
       limit: 1000,

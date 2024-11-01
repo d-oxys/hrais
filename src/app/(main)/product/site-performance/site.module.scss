@@ -1,0 +1,53 @@
+// CustomTable.module.scss
+.customTable {
+  .ant-table-container {
+    scroll-snap-type: x mandatory;
+
+    .ant-table-body .ant-table-cell {
+      scroll-snap-align: start;
+    }
+
+    .ant-table-body,
+    .ant-table-content {
+      scrollbar-width: thin;
+      scrollbar-color: #eaeaea transparent;
+      scrollbar-gutter: stable;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #eaeaea;
+        border-radius: 10px;
+      }
+    }
+
+    .ant-table-body .ant-table-row:nth-child(even) .ant-table-cell {
+      background-color: #ebf8ff !important;
+    }
+
+    .ant-table-body .ant-table-row:nth-child(odd) .ant-table-cell {
+      background-color: #ffffff !important;
+    }
+
+    .ant-table-fixed-left .ant-table-row:nth-child(even) .ant-table-cell,
+    .ant-table-fixed-left
+      .ant-table-row:nth-child(even)
+      .ant-table-cell-fix-left {
+      background-color: #ebf8ff !important;
+    }
+
+    .ant-table-fixed-left .ant-table-row:nth-child(odd) .ant-table-cell,
+    .ant-table-fixed-left
+      .ant-table-row:nth-child(odd)
+      .ant-table-cell-fix-left {
+      background-color: #ffffff !important;
+    }
+  }
+}

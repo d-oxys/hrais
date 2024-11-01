@@ -14,7 +14,7 @@ export interface SalesData {
   netto: number | null;
   dpp: number | null;
   ppn: number | null;
-  sales_percetange: number | null;
+  sales_percentage: number | null;
   sales_percentage: number | null;
 }
 

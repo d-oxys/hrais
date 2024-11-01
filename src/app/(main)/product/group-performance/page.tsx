@@ -173,7 +173,7 @@ const GrooupPerformancePage: React.FC = () => {
     },
     {
       title: "% of Sales",
-      dataIndex: "sales_percetange",
+      dataIndex: "sales_percentage",
       key: "percentageOfSales",
       render: (value) => `${value ? value.toFixed(2) : 0}%`,
       onHeaderCell: () => ({
@@ -293,7 +293,7 @@ const GrooupPerformancePage: React.FC = () => {
         : "2023-12-31";
     const params = {
       group: "group",
-      kategori: "all",
+      kategori: "",
       awal,
       akhir,
       limit: 1000,
