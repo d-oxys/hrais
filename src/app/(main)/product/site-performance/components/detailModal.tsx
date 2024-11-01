@@ -27,7 +27,7 @@ interface DataType {
 interface DetailModalProps {
   visible: boolean;
   onClose: () => void;
-  data: DataType | null;
+  data: any | null;
 }
 
 const table1Data = [

@@ -19,32 +19,27 @@ import dayjs, { Dayjs } from "dayjs";
 
 const { RangePicker } = DatePicker;
 
-interface DataType {
-  key: React.Key;
-  name: string;
-  age: number;
+interface StoreData {
+  kdtoko: string;
+  qty: number;
+  brutto: number;
+  disc_r: number;
+  total: number;
+  salesPercentage: string;
   status: string[];
-  building: string;
-  number: number;
-  companyAddress: string;
-  companyName: string;
-  gender: string;
-  salesPercentage1: number;
-  lostSales1: number;
-  salesPercentage2: number;
-  lostSales2: number;
-  salesPercentage3: number;
-  lostSales3: number;
-  salesPercentage4: number;
-  lostSales4: number;
-  brand: string;
-  date: string;
+}
+
+interface DataType {
+  key: number;
+  kode_brg: string;
+  name: string;
+  stores: StoreData[];
 }
 
 interface TableComponentProps {
-  columns: TableColumnsType<DataType>;
-  dataSource: DataType[];
-  onRowClick: (record: DataType) => void;
+  columns: TableColumnsType<any>;
+  dataSource: any[];
+  onRowClick: (record: any) => void;
   onBrandChange: (value: string) => void;
   onSearch: (value: string) => void;
   onDateChange: (dates: [dayjs.Dayjs | null, dayjs.Dayjs | null]) => void;
@@ -131,6 +126,7 @@ const TableComponent: React.FC<TableComponentProps> = ({
     }
     handleDateChange(range);
   };
+
   return (
     <>
       <Row
@@ -190,7 +186,6 @@ const TableComponent: React.FC<TableComponentProps> = ({
               </div>
             )}
           />
-
           <Dropdown
             overlay={
               <Menu>

@@ -1,52 +1,48 @@
 "use client";
-import { Table, Menu, Popover, Tag, TableColumnsType, Button } from "antd";
-import React, { useState } from "react";
+import { TableColumnsType, Menu, Popover } from "antd";
+import React, { useState, useEffect } from "react";
 import TableComponent from "./components/table";
 import DetailModal from "./components/detailModal";
-import dayjs from "dayjs";
 import FormPermission from "../components/FormPermission";
-import {
-  FormOutlined,
-  DeleteOutlined,
-  EyeOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { useAppDispatch, useAppSelector } from "@root/libs/store";
+import { fetchProducts } from "@root/libs/store/thunk/product";
+
+interface StoreData {
+  kdtoko: string;
+  qty: number;
+  brutto: number;
+  disc_r: number;
+  total: number;
+  sales_percentage: string;
+  status: string[];
+}
 
 interface DataType {
-  key: React.Key;
+  key: number;
+  kode_brg: string;
   name: string;
-  age: number;
-  status: string[];
-  building: string;
-  number: number;
-  companyAddress: string;
-  companyName: string;
-  gender: string;
-  salesPercentage1: number;
-  lostSales1: number;
-  salesPercentage2: number;
-  lostSales2: number;
-  salesPercentage3: number;
-  lostSales3: number;
-  salesPercentage4: number;
-  lostSales4: number;
-  brand: string;
-  date: string;
+  stores: StoreData[];
 }
 
 const App: React.FC = () => {
+  const dispatch = useAppDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedRow, setSelectedRow] = useState<DataType | null>(null);
-  const [selectedFilter, setSelectedFilter] = useState<string | null>(null);
+
+  // State untuk Filter Params
+  const [awal, setAwal] = useState<string | undefined>(undefined);
+  const [akhir, setAkhir] = useState<string | undefined>(undefined);
+  const [kdtoko, setKdtoko] = useState<string | undefined>(undefined);
+
+  const products = useAppSelector((state) => state.product.products);
+
+  useEffect(() => {
+    dispatch(fetchProducts({ awal, akhir, kdtoko }));
+  }, [awal, akhir, kdtoko, dispatch]);
 
   const handleRowClick = (record: DataType) => {
     setSelectedRow(record);
     setIsModalVisible(true);
-  };
-
-  const handleFilterClick = (filterValue: string) => {
-    setSelectedFilter(filterValue);
-    console.log("Selected filter:", filterValue);
   };
 
   const handleModalClose = () => {
@@ -54,56 +50,44 @@ const App: React.FC = () => {
     setSelectedRow(null);
   };
 
-  const generateSiteColumns = (siteIndex: number): any => [
+  const uniqueKdtoko = Array.from(
+    new Set(
+      products.flatMap((product: DataType) =>
+        product.stores.map((store: StoreData) => store.kdtoko)
+      )
+    )
+  );
+
+  const generateSiteColumns = (kdtoko: string): any => [
     {
-      title: "qty",
-      dataIndex: "age",
-      key: `age${siteIndex}`,
+      title: "Qty",
+      dataIndex: ["stores"],
+      key: `qty_${kdtoko}`,
       width: 100,
-      sorter: (a: any, b: any) => a.age - b.age,
+      render: (stores: StoreData[]) => {
+        const store = stores.find((s) => s.kdtoko === kdtoko);
+        return store ? store.qty : "-";
+      },
     },
     {
       title: "% Of Sales",
-      dataIndex: `salesPercentage${siteIndex}`,
-      key: `salesPercentage${siteIndex}`,
+      dataIndex: ["stores"],
+      key: `salesPercentage_${kdtoko}`,
       width: 100,
+      render: (stores: StoreData[]) => {
+        const store = stores.find((s) => s.kdtoko === kdtoko);
+        return store ? store.sales_percentage : "-";
+      },
     },
     {
       title: "Lost Sales",
-      dataIndex: `lostSales${siteIndex}`,
-      key: `lostSales${siteIndex}`,
+      dataIndex: ["stores"],
+      key: `lostSales_${kdtoko}`,
       width: 100,
-    },
-    {
-      title: "Status",
-      key: "status",
-      dataIndex: "status",
-      width: 100,
-      render: (status: string[]) => (
-        <span>
-          {status.map((tag) => (
-            <Tag color={tag.length > 5 ? "geekblue" : "green"} key={tag}>
-              {tag}
-            </Tag>
-          ))}
-        </span>
-      ),
-    },
-    {
-      key: "view",
-      dataIndex: "view",
-      title: "View Detail",
-      width: 150,
-      render: (text: string, record: DataType) => (
-        <div className="text-center flex justify-center w-full cursor-pointer">
-          <Button
-            className="bg-primary/25 rounded-lg text-primary cursor-pointer"
-            onClick={() => handleRowClick(record)} // Passing record to open modal with data
-          >
-            <EyeOutlined />
-          </Button>
-        </div>
-      ),
+      render: (stores: StoreData[]) => {
+        const store = stores.find((s) => s.kdtoko === kdtoko);
+        return store ? store.total - store.brutto + store.disc_r : "-";
+      },
     },
   ];
 
@@ -149,63 +133,33 @@ const App: React.FC = () => {
     },
     {
       title: "Artikel",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "kode_brg",
+      key: "kode_brg",
       width: 200,
       fixed: "left",
       filters: [
         {
           text: (
             <Popover
-              content={categoryMenu(handleFilterClick)}
+              content={categoryMenu(() => {})}
               trigger="hover"
               placement="rightTop"
             >
               <span>Category</span>
             </Popover>
           ),
-          value: selectedFilter || "ALL",
+          value: "ALL",
         },
-        { text: "CROSS BODY", value: "CROSS BODY" },
-        { text: "MULTI WAYS CARRY", value: "MULTI WAYS CARRY" },
-        { text: "TOTE BAG", value: "TOTE BAG" },
-        { text: "POUCH", value: "POUCH" },
       ],
-      onFilter: (value, record) => record.name.indexOf(value as string) === 0,
     },
   ];
 
-  const siteCount = 4;
-  for (let i = 1; i <= siteCount; i++) {
+  uniqueKdtoko.forEach((kdtoko) => {
     columns.push({
-      title: `Site ${i}`,
-      children: generateSiteColumns(i),
+      title: `Store ${kdtoko}`,
+      children: generateSiteColumns(kdtoko),
     });
-  }
-
-  const dataSource = Array.from({ length: 100 }).map<DataType>((_, i) => ({
-    key: i,
-    name: `Artikel ${i + 1}`,
-    age: Math.floor(Math.random() * 100) + 1,
-    status: [Math.random() > 0.5 ? "TOP" : "LOW"],
-    building: `Building ${Math.floor(Math.random() * 10) + 1}`,
-    number: Math.floor(Math.random() * 10000),
-    companyAddress: `Address ${i + 1}`,
-    companyName: `Company ${i + 1}`,
-    gender: Math.random() > 0.5 ? "M" : "F",
-    salesPercentage1: Math.floor(Math.random() * 100),
-    lostSales1: Math.floor(Math.random() * 100),
-    salesPercentage2: Math.floor(Math.random() * 100),
-    lostSales2: Math.floor(Math.random() * 100),
-    salesPercentage3: Math.floor(Math.random() * 100),
-    lostSales3: Math.floor(Math.random() * 100),
-    salesPercentage4: Math.floor(Math.random() * 100),
-    lostSales4: Math.floor(Math.random() * 100),
-    brand: `Brand ${Math.ceil(Math.random() * 3)}`,
-    date: dayjs()
-      .subtract(Math.floor(Math.random() * 30), "day")
-      .format("YYYY-MM-DD"),
-  }));
+  });
 
   return (
     <>
@@ -214,11 +168,14 @@ const App: React.FC = () => {
       </h1>
       <TableComponent
         columns={columns}
-        dataSource={dataSource}
+        dataSource={products}
         onRowClick={handleRowClick}
-        onBrandChange={() => {}}
-        onSearch={() => {}}
-        onDateChange={() => {}}
+        onBrandChange={(brand) => setKdtoko(brand)}
+        onSearch={(searchTerm) => setKdtoko(searchTerm)}
+        onDateChange={(dates) => {
+          setAwal(dates[0]?.format("YYYY-MM-DD") || undefined);
+          setAkhir(dates[1]?.format("YYYY-MM-DD") || undefined);
+        }}
         filterContent={<FormPermission />}
       />
       <DetailModal
