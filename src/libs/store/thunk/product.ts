@@ -1,6 +1,8 @@
-import axios, { AxiosError } from "axios";
-import { AppDispatch } from "..";
-import { productActions } from "../slices/product.slice";
+import axios, { AxiosError } from 'axios';
+import { AppDispatch } from '..';
+import { productActions } from '../slices/product.slice';
+import promoData from '@root/libs/constants/promo.json';
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -8,37 +10,41 @@ interface FetchProductsParams {
   awal?: string;
   akhir?: string;
   artikel?: string;
-  kdtoko?: string;
+  kdtoko?: string[];
+  brand?: string;
 }
 
-export const fetchProducts = (params: FetchProductsParams = {}) => {
-  return async (dispatch: AppDispatch) => {
-    dispatch(productActions.setError(null));
+export const fetchProducts = createAsyncThunk(
+  'products/fetchProducts',
+  async (
+    params: {
+      awal?: string;
+      akhir?: string;
+      artikel?: string;
+      brand?: string;
+      kdtoko?: string[];
+    },
+    { dispatch }
+  ) => {
     dispatch(productActions.setLoading(true));
 
+    const { awal = '2024-01-01', akhir = '2024-10-10', artikel = '', brand = '', kdtoko } = params;
+
+    const kdtokoParam = kdtoko ? `&kdtoko=${kdtoko.join(',')}` : '';
+    const url = `${API_URL}/api/sales/product/site/kategori/all?awal=${awal}&akhir=${akhir}&artikel=${artikel}&limit=10000000&brand=${brand}${kdtokoParam}`;
+
     try {
-      const queryParams = new URLSearchParams();
-
-      if (params.awal) queryParams.append("awal", params.awal);
-      if (params.akhir) queryParams.append("akhir", params.akhir);
-      if (params.artikel) queryParams.append("artikel", params.artikel);
-      if (params.kdtoko) queryParams.append("kdtoko", params.kdtoko);
-
-      const response = await axios.get(
-        `${API_URL}/api/sales/product/site/group/all?${queryParams.toString()}&limit=100`
-      );
+      const response = await axios.get(url);
       dispatch(productActions.setProducts(response.data.items));
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        dispatch(productActions.setError(err.response?.data?.message));
-      } else {
-        dispatch(productActions.setError("An unexpected error occurred"));
-      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      dispatch(productActions.setError(error instanceof Error ? error.message : 'An unknown error occurred'));
+      dispatch(productActions.setProducts([]));
     } finally {
       dispatch(productActions.setLoading(false));
     }
-  };
-};
+  }
+);
 
 export const analyzeProductAttention = () => {
   return async (dispatch: AppDispatch) => {
@@ -46,15 +52,11 @@ export const analyzeProductAttention = () => {
     dispatch(productActions.setAttentionLoading(true));
 
     try {
-      const response = await axios.get(
-        `${API_URL}/api/sales/product/site/group/all?limit=100000000`
-      );
+      const response = await axios.get(`${API_URL}/api/sales/product/site/group/all?limit=100000000`);
       const products = response.data.items;
 
       const attentionNeeded = products.filter((product: any) => {
-        const salesRatios = product.stores.map((store: any) =>
-          parseFloat(store.sales_percentage)
-        );
+        const salesRatios = product.stores.map((store: any) => parseFloat(store.sales_percentage));
         const maxRatio = Math.max(...salesRatios);
         const minRatio = Math.min(...salesRatios);
 
@@ -66,9 +68,7 @@ export const analyzeProductAttention = () => {
       if (err instanceof AxiosError) {
         dispatch(productActions.setAttentionError(err.response?.data?.message));
       } else {
-        dispatch(
-          productActions.setAttentionError("An unexpected error occurred")
-        );
+        dispatch(productActions.setAttentionError('An unexpected error occurred'));
       }
     } finally {
       dispatch(productActions.setAttentionLoading(false));
