@@ -86,6 +86,7 @@ const TableComponent: React.FC<TableComponentProps> = ({
   };
 
   const handleDateChange = (dates: [Dayjs | null, Dayjs | null]) => {
+    console.log('Selected Dates:', dates);
     setSelectedRange(dates);
     if (onDateChange) onDateChange(dates);
   };
@@ -138,7 +139,7 @@ const TableComponent: React.FC<TableComponentProps> = ({
         </Col>
         <Col
           xs={24}
-          md={8}
+          md={16}
           style={{
             display: 'flex',
             justifyContent: 'flex-end',

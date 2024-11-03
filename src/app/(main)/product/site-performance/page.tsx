@@ -1,6 +1,6 @@
 'use client';
 import { TableColumnsType, Menu, Popover, Button } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import TableComponent from './components/table';
 import DetailModal from './components/detailModal';
 import FormPermission from '../components/FormPermission';
@@ -8,6 +8,7 @@ import { useAppDispatch, useAppSelector } from '@root/libs/store';
 import { fetchProducts } from '@root/libs/store/thunk/product';
 import { productActions } from '@root/libs/store/slices/product.slice';
 import { FormOutlined, DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
+import { Dayjs } from 'dayjs';
 
 interface StoreData {
   kdtoko: string;
@@ -18,6 +19,8 @@ interface StoreData {
   sales_percentage: string;
   status: string[];
   kdbarang?: string;
+  awal?: string;
+  akhir?: string;
 }
 
 interface DataType {
@@ -40,18 +43,28 @@ const App: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<'low' | 'high'>('low');
   const { products, loading, error } = useAppSelector((state) => state.product);
   const selectedSites = useAppSelector((state) => state.selectedSites.sites);
+  const [isFetching, setIsFetching] = useState(false);
+
+  const fetchData = useCallback(() => {
+    setIsFetching(true);
+    dispatch(fetchProducts({ awal, akhir, kdtoko: selectedSites, brand, artikel })).finally(() => setIsFetching(false)); // Selesai loading
+  }, [awal, akhir, selectedSites, brand, artikel, dispatch]);
 
   useEffect(() => {
-    dispatch(fetchProducts({ awal, akhir, kdtoko: selectedSites, brand, artikel }));
-  }, [awal, akhir, selectedSites, brand, artikel, dispatch]);
+    fetchData();
+  }, [fetchData]);
 
   const handleModalClose = () => {
     setIsModalVisible(false);
     setSelectedStoreData(null);
   };
 
+  const handleDateChange = (dates: [Dayjs | null, Dayjs | null]) => {
+    setAwal(dates && dates[0] ? dates[0].format('YYYY-MM-DD') : undefined);
+    setAkhir(dates && dates[1] ? dates[1].format('YYYY-MM-DD') : undefined);
+  };
+
   useEffect(() => {
-    // dispatch(productActions.setLoading(true));
     const sortedProducts = [...products].sort((a, b) => {
       const totalPercentageA = a.stores.reduce((total: number, store: StoreData) => {
         return total + parseFloat(store.sales_percentage || '0');
@@ -62,8 +75,7 @@ const App: React.FC = () => {
       return sortOrder === 'low' ? totalPercentageA - totalPercentageB : totalPercentageB - totalPercentageA;
     });
     setSortedData(sortedProducts);
-    // dispatch(productActions.setLoading(false));
-  }, [products, sortOrder, dispatch]);
+  }, [products, sortOrder]);
 
   const uniqueKdtoko = Array.from(new Set(products.flatMap((product: DataType) => product.stores.map((store: StoreData) => store.kdtoko))));
 
@@ -112,7 +124,12 @@ const App: React.FC = () => {
                   key={store.kdtoko}
                   className='bg-primary/25 rounded-lg text-primary cursor-pointer'
                   onClick={() => {
-                    setSelectedStoreData({ ...store, kdbarang: record.kode_brg });
+                    setSelectedStoreData({
+                      ...store,
+                      kdbarang: record.kode_brg,
+                      awal,
+                      akhir,
+                    });
                     setIsModalVisible(true);
                   }}
                 >
@@ -158,13 +175,11 @@ const App: React.FC = () => {
         onSortChange={(order) => setSortOrder(order)}
         onBrandChange={(brand) => setBrand(brand)}
         onSearch={(searchTerm) => setArtikel(searchTerm)}
-        onDateChange={(dates) => {
-          setAwal(dates[0]?.format('YYYY-MM-DD') || undefined);
-          setAkhir(dates[1]?.format('YYYY-MM-DD') || undefined);
-        }}
-        isLoading={loading}
+        onDateChange={handleDateChange}
+        isLoading={loading || isFetching}
         filterContent={<FormPermission />}
       />
+
       <DetailModal visible={isModalVisible} onClose={handleModalClose} data={selectedStoreData} />
     </>
   );

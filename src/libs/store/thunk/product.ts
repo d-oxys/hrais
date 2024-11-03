@@ -12,6 +12,7 @@ interface FetchProductsParams {
   artikel?: string;
   kdtoko?: string[];
   brand?: string;
+  kode_brg?: string;
 }
 
 export const fetchProducts = createAsyncThunk(
@@ -46,6 +47,26 @@ export const fetchProducts = createAsyncThunk(
     }
   }
 );
+
+export const fetchProductDetail = createAsyncThunk('product/fetchProductDetail', async (params: FetchProductsParams, { dispatch, rejectWithValue }) => {
+  dispatch(productActions.setLoadingDetail(true));
+  dispatch(productActions.setError(null));
+
+  try {
+    const { awal, akhir, kode_brg, kdtoko } = params;
+    const response = await axios.get(`${API_URL}/api/sales/product/site/kategori/all/detail`, { params: { awal, akhir, kode_brg, kdtoko } });
+    console.log(response.data);
+    dispatch(productActions.setProductsDetail(response.data));
+  } catch (err: unknown) {
+    if (err instanceof AxiosError) {
+      return rejectWithValue(err.response?.data?.message || 'An error occurred');
+    } else {
+      return rejectWithValue('An unexpected error occurred');
+    }
+  } finally {
+    dispatch(productActions.setLoadingDetail(false));
+  }
+});
 
 export const analyzeProductAttention = () => {
   return async (dispatch: AppDispatch) => {
