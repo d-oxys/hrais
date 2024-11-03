@@ -29,7 +29,6 @@ export const fetchProducts = createAsyncThunk(
     dispatch(productActions.setLoading(true));
 
     const { awal = '2024-01-01', akhir = '2024-10-10', artikel = '', brand = '', kdtoko } = params;
-
     const kdtokoParam = kdtoko ? `&kdtoko=${kdtoko.join(',')}` : '';
     const url = `${API_URL}/api/sales/product/site/kategori/all?awal=${awal}&akhir=${akhir}&artikel=${artikel}&limit=10000000&brand=${brand}${kdtokoParam}`;
 
@@ -38,8 +37,10 @@ export const fetchProducts = createAsyncThunk(
       dispatch(productActions.setProducts(response.data.items));
     } catch (error) {
       console.error('Error fetching products:', error);
+
+      // Gunakan data dari promoData jika API gagal
+      dispatch(productActions.setProducts(promoData.items || []));
       dispatch(productActions.setError(error instanceof Error ? error.message : 'An unknown error occurred'));
-      dispatch(productActions.setProducts([]));
     } finally {
       dispatch(productActions.setLoading(false));
     }

@@ -33,6 +33,7 @@ interface TableComponentProps extends TableProps<any> {
   onSearch: (value: string) => void;
   onDateChange: (dates: [dayjs.Dayjs | null, dayjs.Dayjs | null]) => void;
   onFilterClick?: () => void;
+  onSortChange?: (order: 'low' | 'high') => void;
   filterContent?: React.ReactNode;
   dateFilterOptions?: { label: string; value: string }[];
   isLoading?: boolean;
@@ -47,6 +48,7 @@ const TableComponent: React.FC<TableComponentProps> = ({
   onDateChange,
   onFilterClick,
   filterContent,
+  onSortChange,
   isLoading = false,
   dateFilterOptions = [
     { label: 'Today', value: 'today' },
@@ -64,6 +66,13 @@ const TableComponent: React.FC<TableComponentProps> = ({
   const [selectedRange, setSelectedRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string>('All Brands');
+  const [sortOrder, setSortOrder] = useState<'low' | 'high'>('low');
+
+  const handleSortChange = (e: any) => {
+    const order = e.target.value;
+    setSortOrder(order);
+    if (onSortChange) onSortChange(order);
+  };
 
   const handleFilterClick = () => {
     if (onFilterClick) onFilterClick();
@@ -122,7 +131,7 @@ const TableComponent: React.FC<TableComponentProps> = ({
     <>
       <Row gutter={[24, 24]} style={{ marginBottom: 16 }} justify='space-between'>
         <Col xs={24} md={8} style={{ display: 'flex', alignItems: 'center' }}>
-          <Radio.Group>
+          <Radio.Group onChange={handleSortChange} value={sortOrder}>
             <Radio value='low'>Low to High</Radio>
             <Radio value='high'>High to Low</Radio>
           </Radio.Group>

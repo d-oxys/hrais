@@ -83,24 +83,24 @@ const DetailModal: React.FC<DetailModalProps> = ({ visible, onClose, data }) => 
             <div className='flex items-center mb-2'>
               <div className='w-40 font-semibold'>Name SKU</div>
               <div className='w-4'>:</div>
-              <div className='flex-1'>{data.name}</div>
+              <div className='flex-1'>{data.kdbarang}</div>
             </div>
             <div className='flex items-center mb-2'>
               <div className='w-40 font-semibold'>Qty of sale</div>
               <div className='w-4'>:</div>
-              <div className='flex-1'>{data.age}</div>
+              <div className='flex-1'>{data.qty}</div>
             </div>
             <div className='flex items-center mb-2'>
               <div className='w-40 font-semibold'>% of sale</div>
               <div className='w-4'>:</div>
-              <div className='flex-1'>{Array.isArray(data.status) ? data.status.join(', ') : 'N/A'}</div>
+              <div className='flex-1'>{data.sales_percentage}%</div>
             </div>
           </div>
           <div>
             <div className='flex items-center mb-2'>
               <div className='w-40 font-semibold'>Site</div>
               <div className='w-4'>:</div>
-              <div className='flex-1'>{data.gender}</div>
+              <div className='flex-1'>{data.kdtoko}</div>
             </div>
             <div className='flex items-center mb-2'>
               <div className='w-40 font-semibold'>Best price range</div>

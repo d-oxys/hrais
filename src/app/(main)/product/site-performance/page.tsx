@@ -6,6 +6,7 @@ import DetailModal from './components/detailModal';
 import FormPermission from '../components/FormPermission';
 import { useAppDispatch, useAppSelector } from '@root/libs/store';
 import { fetchProducts } from '@root/libs/store/thunk/product';
+import { productActions } from '@root/libs/store/slices/product.slice';
 import { FormOutlined, DeleteOutlined, EyeOutlined, PlusOutlined } from '@ant-design/icons';
 
 interface StoreData {
@@ -16,6 +17,7 @@ interface StoreData {
   total: number;
   sales_percentage: string;
   status: string[];
+  kdbarang?: string;
 }
 
 interface DataType {
@@ -34,6 +36,8 @@ const App: React.FC = () => {
   const [kdtoko, setKdtoko] = useState<string | undefined>(undefined);
   const [brand, setBrand] = useState<string | undefined>(undefined);
   const [artikel, setArtikel] = useState<string | undefined>(undefined);
+  const [sortedData, setSortedData] = useState<DataType[]>([]);
+  const [sortOrder, setSortOrder] = useState<'low' | 'high'>('low');
   const { products, loading, error } = useAppSelector((state) => state.product);
   const selectedSites = useAppSelector((state) => state.selectedSites.sites);
 
@@ -41,15 +45,25 @@ const App: React.FC = () => {
     dispatch(fetchProducts({ awal, akhir, kdtoko: selectedSites, brand, artikel }));
   }, [awal, akhir, selectedSites, brand, artikel, dispatch]);
 
-  const handleRowClick = (store: StoreData) => {
-    setSelectedStoreData(store);
-    setIsModalVisible(true);
-  };
-
   const handleModalClose = () => {
     setIsModalVisible(false);
     setSelectedStoreData(null);
   };
+
+  useEffect(() => {
+    // dispatch(productActions.setLoading(true));
+    const sortedProducts = [...products].sort((a, b) => {
+      const totalPercentageA = a.stores.reduce((total: number, store: StoreData) => {
+        return total + parseFloat(store.sales_percentage || '0');
+      }, 0);
+      const totalPercentageB = b.stores.reduce((total: number, store: StoreData) => {
+        return total + parseFloat(store.sales_percentage || '0');
+      }, 0);
+      return sortOrder === 'low' ? totalPercentageA - totalPercentageB : totalPercentageB - totalPercentageA;
+    });
+    setSortedData(sortedProducts);
+    // dispatch(productActions.setLoading(false));
+  }, [products, sortOrder, dispatch]);
 
   const uniqueKdtoko = Array.from(new Set(products.flatMap((product: DataType) => product.stores.map((store: StoreData) => store.kdtoko))));
 
@@ -94,7 +108,14 @@ const App: React.FC = () => {
           {record.stores.map(
             (store) =>
               store.kdtoko === kdtoko && (
-                <Button key={store.kdtoko} className='bg-primary/25 rounded-lg text-primary cursor-pointer' onClick={() => handleRowClick(store)}>
+                <Button
+                  key={store.kdtoko}
+                  className='bg-primary/25 rounded-lg text-primary cursor-pointer'
+                  onClick={() => {
+                    setSelectedStoreData({ ...store, kdbarang: record.kode_brg });
+                    setIsModalVisible(true);
+                  }}
+                >
                   <EyeOutlined />
                 </Button>
               )
@@ -103,27 +124,6 @@ const App: React.FC = () => {
       ),
     },
   ];
-
-  const categoryMenu = (handleFilterClick: (filterValue: string) => void) => (
-    <Menu>
-      <Menu.SubMenu key='bags' title='BAGS' onTitleClick={() => handleFilterClick('BAGS')}>
-        <Menu.Item key='backpack' onClick={() => handleFilterClick('BACKPACK')}>
-          Backpack
-        </Menu.Item>
-        <Menu.Item key='messenger' onClick={() => handleFilterClick('MESSENGER')}>
-          Messenger Bag
-        </Menu.Item>
-      </Menu.SubMenu>
-      <Menu.SubMenu key='apparel' title='APPAREL' onTitleClick={() => handleFilterClick('APPAREL')}>
-        <Menu.Item key='jackets' onClick={() => handleFilterClick('JACKETS')}>
-          Jackets
-        </Menu.Item>
-        <Menu.Item key='t-shirts' onClick={() => handleFilterClick('T-SHIRTS')}>
-          T-Shirts
-        </Menu.Item>
-      </Menu.SubMenu>
-    </Menu>
-  );
 
   const columns: TableColumnsType<DataType> = [
     {
@@ -139,16 +139,6 @@ const App: React.FC = () => {
       key: 'kode_brg',
       width: 200,
       fixed: 'left',
-      filters: [
-        {
-          text: (
-            <Popover content={categoryMenu(() => {})} trigger='hover' placement='rightTop'>
-              <span>Category</span>
-            </Popover>
-          ),
-          value: 'ALL',
-        },
-      ],
     },
   ];
 
@@ -164,8 +154,8 @@ const App: React.FC = () => {
       <h1 className='text-2xl font-semibold mb-8'>Article Performance on Store</h1>
       <TableComponent
         columns={columns}
-        dataSource={products}
-        // onBrandChange={(brand) => setKdtoko(brand)}
+        dataSource={sortedData}
+        onSortChange={(order) => setSortOrder(order)}
         onBrandChange={(brand) => setBrand(brand)}
         onSearch={(searchTerm) => setArtikel(searchTerm)}
         onDateChange={(dates) => {
