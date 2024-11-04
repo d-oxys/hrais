@@ -112,6 +112,10 @@ module.exports = {
         white10: "rgb(255, 255, 255, .10)",
         white06: "rgb(255, 255, 255, .06)",
         positif: "#01A037",
+        blueForgotPassword: "##2F5EC8",
+      },
+      backgroundImage: {
+        customGradient: "linear-gradient(239.48deg, #F4F5F7 41.56%, #A9AAAB 92.67%, #8F9091 125.65%)",
       },
       boxShadow: {
         regular: "0 5px 20px rgba(160,160,160,0.05)",
