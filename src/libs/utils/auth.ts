@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
         console.log("Authorize function called");
         try {
           const resp = await axios.post(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`,
+            `${process.env.NEXT_PUBLIC_23API_URL}/api/v1/login`,
             {
               nip: nip,
               password: password,

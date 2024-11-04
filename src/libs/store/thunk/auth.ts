@@ -2,7 +2,7 @@ import { Http } from "@root/libs/http";
 import { Login } from "@root/libs/types/login";
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_23API_URL;
 const http = new Http();
 
 export const login = async (data: Login) => {

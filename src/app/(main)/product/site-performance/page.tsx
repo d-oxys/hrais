@@ -14,6 +14,8 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import { Dayjs } from "dayjs";
+import { resetPriceSales } from "@root/libs/store/slices/price.slice";
+import { resetColorSales } from "@root/libs/store/slices/color.slice";
 
 interface StoreData {
   kdtoko: string;
@@ -47,10 +49,15 @@ const App: React.FC = () => {
   const [brand, setBrand] = useState<string | undefined>(undefined);
   const [artikel, setArtikel] = useState<string | undefined>(undefined);
   const [sortedData, setSortedData] = useState<DataType[]>([]);
-  const [sortOrder, setSortOrder] = useState<"low" | "high">("low");
+  const [sortOrder, setSortOrder] = useState<"low" | "high">("high");
   const { products, loading, error } = useAppSelector((state) => state.product);
   const selectedSites = useAppSelector((state) => state.selectedSites.sites);
   const [isFetching, setIsFetching] = useState(false);
+
+  useEffect(() => {
+    dispatch(resetPriceSales());
+    dispatch(resetColorSales());
+  }, [dispatch, selectedSites, brand]);
 
   const fetchData = useCallback(() => {
     setIsFetching(true);
@@ -192,8 +199,9 @@ const App: React.FC = () => {
   return (
     <>
       <h1 className="text-2xl font-semibold mb-8">
-        Article Performance on Store
+        Article Performance on Store: {selectedSites.join(", ")}
       </h1>
+
       <TableComponent
         columns={columns}
         dataSource={sortedData}
