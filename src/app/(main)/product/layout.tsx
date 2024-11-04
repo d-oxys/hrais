@@ -1,59 +1,96 @@
 "use client";
-import { useAppSelector } from "@root/libs/store";
+import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { ReactNode, useEffect } from "react";
+import { ArrowDownOutlined, ArrowUpOutlined } from "@ant-design/icons";
 
 interface ProductLayoutProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 const ProductLayout: React.FC<ProductLayoutProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const selectedHam = useAppSelector((state) => state.selectedSites.ham);
+  const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    console.log(selectedHam);
-  }, [selectedHam]);
+  const menuItems = [
+    { key: "product-performance", label: "Product Performance" },
+    { key: "group-performance", label: "Group Performance" },
+    { key: "category-performance", label: "Category Performance" },
+    { key: "sub-category-performance", label: "Sub Category Performance" },
+    { key: "site-performance", label: "Site Performance" },
+  ];
 
   const handleMenuClick = (key: string) => {
     router.push(`/product/${key}`);
+    setIsExpanded(false);
   };
+
+  // Get current active menu item
+  const activeItem =
+    menuItems.find((item) => pathname === `/product/${item.key}`)?.label ||
+    "Select Performance View";
 
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-gray-800 rounded-t-md">
-        <nav className="flex justify-start py-0.5 mx-0.5 space-x-8">
-          <button
-            className={`${pathname === "/product/product-performance" ? "bg-white text-black font-bold" : "text-white"} rounded-t-md transition p-4`}
-            onClick={() => handleMenuClick("product-performance")}
+        {/* Web Version*/}
+        <div className="hidden lg:block">
+          <div
+            className="flex items-center justify-between p-4 text-white cursor-pointer"
+            onClick={() => setIsExpanded(!isExpanded)}
           >
-            Product Performance
-          </button>
-          <button
-            className={`${pathname === "/product/group-performance" ? "bg-white text-black font-bold" : "text-white"} rounded-t-md transition p-4`}
-            onClick={() => handleMenuClick("group-performance")}
+            <span className="font-medium">{activeItem}</span>
+            {isExpanded ? (
+              <ArrowUpOutlined className="text-lg" />
+            ) : (
+              <ArrowDownOutlined className="text-lg" />
+            )}
+          </div>
+
+          <div
+            className={`
+            ${isExpanded ? "block" : "hidden"}
+            transition-all duration-300 ease-in-out
+          `}
           >
-            Group Performance
-          </button>
-          <button
-            className={`${pathname === "/product/category-performance" ? "bg-white text-black font-bold" : "text-white"} rounded-t-md transition p-4`}
-            onClick={() => handleMenuClick("category-performance")}
-          >
-            Category Performance
-          </button>
-          <button
-            className={`${pathname === "/product/sub-category-performance" ? "bg-white text-black font-bold" : "text-white"} rounded-t-md transition p-4`}
-            onClick={() => handleMenuClick("sub-category-performance")}
-          >
-            Sub Category Performance
-          </button>
-          <button
-            className={`${pathname === "/product/site-performance" ? "bg-white text-black font-bold" : "text-white"} rounded-t-md transition p-4`}
-            onClick={() => handleMenuClick("site-performance")}
-          >
-            Site Performance
-          </button>
+            {menuItems.map((item) => (
+              <button
+                key={item.key}
+                className={`
+                  w-full
+                  ${
+                    pathname === `/product/${item.key}`
+                      ? "bg-white text-black font-bold"
+                      : "text-white"
+                  }
+                  rounded-md transition px-6 py-3 text-left hover:bg-gray-700
+                `}
+                onClick={() => handleMenuClick(item.key)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Mobile Version */}
+        <nav className="lg:hidden flex flex-row py-0.5">
+          {menuItems.map((item) => (
+            <button
+              key={item.key}
+              className={`
+                ${
+                  pathname === `/product/${item.key}`
+                    ? "bg-white text-black font-bold"
+                    : "text-white"
+                }
+                rounded-md transition px-6 py-3 text-left hover:bg-gray-700
+              `}
+              onClick={() => handleMenuClick(item.key)}
+            >
+              {item.label}
+            </button>
+          ))}
         </nav>
       </header>
       <main className="p-6 bg-white flex-1">{children}</main>

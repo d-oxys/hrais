@@ -402,7 +402,7 @@ const TableColorPage: React.FC<TableColorPageProps> = ({
               ]}
               rowKey="artikel"
               pagination={false}
-              scroll={{ x: "max-content" }}
+              scroll={{ x: "min-w-screen" }}
             />
           ) : (
             <p>No details available.</p>

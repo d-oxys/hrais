@@ -1,14 +1,192 @@
-.rangePickerPlaceholder input::placeholder {
-  text-align: center;
-}
-
-.rangePickerPlaceholder input:nth-child(2)::placeholder {
-  opacity: 0;
-}
-
 /* product.module.scss */
-.table-header-white .ant-table-thead > tr > th {
-  background-color: #ffffff;
-  color: #000000;
-  border-bottom: 1px solid #e8e8e8;
+.tableContainer {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding: 1rem;
+}
+
+.filterContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.filterSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filterControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.filterLabel {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.limitSelect {
+  width: 80px;
+}
+
+.datePicker {
+  width: 256px;
+
+  // Center placeholder text
+  :global(.ant-picker-input) input::placeholder {
+    text-align: center;
+  }
+}
+
+.brandButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+}
+
+.brandIcon,
+.selectedBrandIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.filterButton {
+  min-width: 100px;
+}
+
+.searchInput {
+  width: 200px;
+}
+
+.quickSelectContainer {
+  padding: 1rem;
+}
+
+.quickSelectRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.quickSelectButton {
+  padding: 0.25rem 0.5rem;
+  background-color: #f0f7ff;
+  border: 1px solid #d1e9ff;
+  border-radius: 4px;
+  color: #1890ff;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: #e6f3ff;
+    text-decoration: underline;
+  }
+}
+
+.responsiveTable {
+  :global(.ant-table-thead > tr > th) {
+    background-color: #ffffff;
+    color: #000000;
+    border-bottom: 1px solid #e8e8e8;
+  }
+}
+
+.mobileFilters {
+  display: none;
+}
+
+.filterModal {
+  width: 70% !important;
+  max-width: 1200px;
+}
+
+// Desktop-first responsive breakpoints
+@media (max-width: 1200px) {
+  .filterContainer {
+    gap: 1.5rem;
+  }
+
+  .filterControls {
+    gap: 1rem;
+  }
+
+  .datePicker {
+    width: 220px;
+  }
+
+  .searchInput {
+    width: 180px;
+  }
+}
+
+@media (max-width: 992px) {
+  .filterControls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .datePicker,
+  .searchInput,
+  .brandButton,
+  .filterButton {
+    width: 100%;
+  }
+
+  .filterModal {
+    width: 80% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktopFilters {
+    display: none;
+  }
+
+  .mobileFilters {
+    display: block;
+    margin-bottom: 1rem;
+  }
+
+  .mobileFilterButton {
+    width: 100%;
+  }
+
+  .mobileFilterModal {
+    width: 90% !important;
+    
+    :global(.ant-modal-body) {
+      padding: 1rem;
+    }
+  }
+
+  .quickSelectRow {
+    justify-content: center;
+  }
+
+  .tableContainer {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterModal,
+  .mobileFilterModal {
+    width: 95% !important;
+  }
+
+  .quickSelectButton {
+    font-size: 0.75rem;
+    padding: 0.25rem;
+  }
 }
