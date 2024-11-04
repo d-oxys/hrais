@@ -6,20 +6,18 @@ import {
   Dropdown,
   Input,
   Modal,
-  Radio,
   Row,
   Table,
   Select,
   Menu,
   TableProps,
-  RadioChangeEvent,
+  Space
 } from "antd";
 import {
   FilterOutlined,
   SearchOutlined,
   DownloadOutlined,
-  ShoppingCartOutlined,
-  ExportOutlined,
+  MenuOutlined
 } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import styles from "./product.module.scss";
@@ -76,7 +74,6 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   onDateChange,
   onLimitChange,
   onBrandChange,
-  onExport,
   onFilterClick,
   expandable,
   isLoading = false,
@@ -86,12 +83,13 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   onRow,
 }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [selectedRange, setSelectedRange] = useState<
-    [Dayjs | null, Dayjs | null]
-  >([null, null]);
+  const [isMobileFiltersVisible, setIsMobileFiltersVisible] = useState(false);
+  const [selectedRange, setSelectedRange] = useState<[Dayjs | null, Dayjs | null]>([
+    null,
+    null,
+  ]);
   const [searchText, setSearchText] = useState("");
   const [limit, setLimit] = useState(limitOptions[0] || 10);
-  const [radioValue, setRadioValue] = useState<string>("mid");
   const [selectedBrand, setSelectedBrand] = useState<string>("All Brands");
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
@@ -152,23 +150,38 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     handleDateChange(range);
   };
 
+  const renderQuickSelectButtons = () => (
+    <div className={styles.quickSelectContainer}>
+      <div className={styles.quickSelectRow}>
+        {dateFilterOptions.slice(0, 6).map((option) => (
+          <button
+            key={option.value}
+            onClick={() => quickSelect(option.value)}
+            className={styles.quickSelectButton}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <div className={styles.quickSelectRow}>
+        {dateFilterOptions.slice(6).map((option) => (
+          <button
+            key={option.value}
+            onClick={() => quickSelect(option.value)}
+            className={styles.quickSelectButton}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
-    if (
-      onSearch &&
-      (e.target.value.length >= 3 || e.target.value.length === 0)
-    ) {
+    if (onSearch && (e.target.value.length >= 3 || e.target.value.length === 0)) {
       onSearch(e.target.value);
     }
-  };
-
-  const handleFilterClick = () => {
-    if (onFilterClick) onFilterClick();
-    setIsModalVisible(false);
-  };
-
-  const handleRadioChange = (e: RadioChangeEvent) => {
-    setRadioValue(e.target.value);
   };
 
   const handleBrandChange = (brand: string, icon: string) => {
@@ -177,176 +190,193 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     if (onBrandChange) onBrandChange(brand);
   };
 
-  const handleExpand = (expanded: boolean, record: any) => {
-    setExpandedRowKeys(expanded ? [record.key] : []);
-  };
-
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      {showFilters && (
-        <Row className="mb-4 justify-between">
-          <Col className="flex items-center space-x-2">
-            <span className="text-sm">Show</span>
-            <Select value={limit} onChange={handleLimitChange} className="w-20">
+  const renderFilters = () => (
+    <div className={styles.filterContainer}>
+      <Row gutter={[16, 16]} align="middle">
+        <Col className={styles.showEntriesCol}>
+          <Space align="center" className={styles.showEntriesSpace}>
+            <span>Show</span>
+            <Select
+              value={limit}
+              onChange={handleLimitChange}
+              className={styles.limitSelect}
+              style={{ width: 70 }}
+            >
               {limitOptions.map((option) => (
                 <Option key={option} value={option}>
                   {option}
                 </Option>
               ))}
             </Select>
-            <span className="text-sm">entries</span>
-          </Col>
-
-          <Col className="flex items-center space-x-4">
-            <RangePicker
-              value={selectedRange}
-              onChange={handleDateChange}
-              className={`w-64 ${styles.rangePickerPlaceholder}`}
-              renderExtraFooter={() => (
-                <div className="my-4">
-                  <div className="flex space-x-2 mt-2">
-                    {dateFilterOptions.slice(0, 6).map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => quickSelect(option.value)}
-                        className="text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline"
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex space-x-2 mt-2">
-                    {dateFilterOptions.slice(6).map((option) => (
-                      <button
-                        key={option.value}
-                        onClick={() => quickSelect(option.value)}
-                        className="text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline"
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            />
-
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item
-                    key="all"
-                    onClick={() => handleBrandChange("", "")}
-                    className="w-full"
-                  >
-                    <div className="flex">
-                      <DownloadOutlined style={{ marginRight: 8 }} />
-                      <div>All Brands</div>
-                    </div>
-                  </Menu.Item>
-                  <Menu.Item
-                    key="bodypack"
-                    onClick={() =>
-                      handleBrandChange(
-                        "Bodypack",
-                        "/assets/images/logo-bp.jpeg"
-                      )
-                    }
-                    className="w-full"
-                  >
-                    <div className="flex">
-                      <img
-                        src="/assets/images/logo-bp.jpeg"
-                        alt="Bodypack Logo"
-                        style={{ width: 20, height: 20, marginRight: 8 }}
-                      />
-                      <div>Bodypack</div>
-                    </div>
-                  </Menu.Item>
-                  <Menu.Item
-                    key="exsport"
-                    onClick={() =>
-                      handleBrandChange(
-                        "Exsport",
-                        "/assets/images/exsport-logo.jpg"
-                      )
-                    }
-                    className="w-full"
-                  >
-                    <div className="flex">
-                      <img
-                        src="/assets/images/exsport-logo.jpg"
-                        alt="Exsport Logo"
-                        style={{ width: 20, height: 20, marginRight: 8 }}
-                      />
-                      <div>Exsport</div>
-                    </div>
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Button
-                className="flex items-center"
-                icon={
-                  selectedIcon ? (
-                    <img
-                      src={selectedIcon}
-                      alt="Brand Icon"
-                      style={{ width: 20, height: 20 }}
-                    />
-                  ) : (
-                    <DownloadOutlined />
-                  )
+            <span>entries</span>
+          </Space>
+        </Col>
+        
+        <Col flex="auto">
+          <Row gutter={[16, 16]} justify="end" align="middle">
+            <Col>
+              <RangePicker
+                value={selectedRange}
+                onChange={handleDateChange}
+                className={styles.datePicker}
+                style={{ width: 280 }}
+                renderExtraFooter={renderQuickSelectButtons}
+              />
+            </Col>
+            
+            <Col>
+              <Dropdown
+                overlay={
+                  <Menu className={styles.brandMenu}>
+                    <Menu.Item
+                      key="all"
+                      onClick={() => handleBrandChange("All Brands", "")}
+                    >
+                      <Space>
+                        <DownloadOutlined />
+                        <span>All Brands</span>
+                      </Space>
+                    </Menu.Item>
+                    <Menu.Item
+                      key="bodypack"
+                      onClick={() =>
+                        handleBrandChange(
+                          "Bodypack",
+                          "/assets/images/logo-bp.jpeg"
+                        )
+                      }
+                    >
+                      <Space>
+                        <img
+                          src="/assets/images/logo-bp.jpeg"
+                          alt="Bodypack Logo"
+                          style={{ width: 20, height: 20 }}
+                        />
+                        <span>Bodypack</span>
+                      </Space>
+                    </Menu.Item>
+                    <Menu.Item
+                      key="exsport"
+                      onClick={() =>
+                        handleBrandChange(
+                          "Exsport",
+                          "/assets/images/exsport-logo.jpg"
+                        )
+                      }
+                    >
+                      <Space>
+                        <img
+                          src="/assets/images/exsport-logo.jpg"
+                          alt="Exsport Logo"
+                          style={{ width: 20, height: 20 }}
+                        />
+                        <span>Exsport</span>
+                      </Space>
+                    </Menu.Item>
+                  </Menu>
                 }
+                trigger={["click"]}
               >
-                {selectedBrand}
+                <Button className={styles.brandButton}>
+                  <Space>
+                    {selectedIcon ? (
+                      <img
+                        src={selectedIcon}
+                        alt="Brand Icon"
+                        style={{ width: 20, height: 20 }}
+                      />
+                    ) : (
+                      <DownloadOutlined />
+                    )}
+                    <span>{selectedBrand}</span>
+                  </Space>
+                </Button>
+              </Dropdown>
+            </Col>
+            
+            <Col>
+              <Button
+                icon={<FilterOutlined />}
+                onClick={() => setIsModalVisible(true)}
+                className={styles.filterButton}
+              >
+                Pilih Site
               </Button>
-            </Dropdown>
+            </Col>
+            
+            <Col>
+              <Input
+                placeholder="Search by Name"
+                prefix={<SearchOutlined />}
+                value={searchText}
+                onChange={handleSearchChange}
+                className={styles.searchInput}
+                style={{ width: 200 }}
+                allowClear
+              />
+            </Col>
+          </Row>
+        </Col>
+      </Row>
+    </div>
+  );
 
+  return (
+    <div className={styles.tableContainer}>
+      {showFilters && (
+        <>
+          <div className={styles.desktopFilters}>{renderFilters()}</div>
+          <div className={styles.mobileFilters}>
             <Button
-              icon={<FilterOutlined />}
-              onClick={() => setIsModalVisible(true)}
+              icon={<MenuOutlined />}
+              onClick={() => setIsMobileFiltersVisible(true)}
+              className={styles.mobileFilterButton}
             >
-              Pilih Site
+              Filters
             </Button>
-
-            <Input
-              placeholder="Search by Name"
-              prefix={<SearchOutlined />}
-              value={searchText}
-              onChange={handleSearchChange}
-              className="w-52"
-              allowClear
-            />
-          </Col>
-        </Row>
+          </div>
+        </>
       )}
 
       <Table
         columns={columns}
         dataSource={data.slice(0, limit)}
         loading={isLoading}
-        expandable={{ expandedRowRender }}
-        expandedRowKeys={expandedRowKeys}
-        onExpand={handleExpand}
+        expandable={{
+          expandedRowRender,
+          expandedRowKeys,
+          onExpand: (expanded, record) =>
+            setExpandedRowKeys(expanded ? [record.key] : []),
+        }}
         pagination={showPagination ? pagination : false}
         onRow={onRow}
-        onHeaderRow={() => ({
-          style: {
-            backgroundColor: "#ffffff",
-            color: "#000000",
-          },
-        })}
+        className={styles.responsiveTable}
+        scroll={{ x: true }}
       />
+
       <Modal
         title="Filter Options"
         visible={isModalVisible}
-        onOk={handleFilterClick}
+        onOk={() => {
+          if (onFilterClick) onFilterClick();
+          setIsModalVisible(false);
+        }}
         onCancel={() => setIsModalVisible(false)}
-        className="w-[70%] h-[80%]"
+        className={styles.filterModal}
       >
         {filterContent || <p>Additional Filter Options</p>}
       </Modal>
-    </Suspense>
+
+      <Modal
+        title="Filters"
+        visible={isMobileFiltersVisible}
+        onCancel={() => setIsMobileFiltersVisible(false)}
+        footer={null}
+        className={styles.mobileFilterModal}
+      >
+        {renderFilters()}
+      </Modal>
+    </div>
   );
 };
 
