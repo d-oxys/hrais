@@ -14,7 +14,6 @@ export interface SalesData {
   dpp: number | null;
   ppn: number | null;
   sales_percentage: number | null;
-  sales_percentage: number | null;
 }
 
 export interface PriceData {
@@ -25,7 +24,6 @@ export interface PriceData {
   brutto: number;
   disc: number;
   netto: number;
-  sales_percentage: number;
   sales_percentage: number;
   salesData: SalesData[];
 }

@@ -32,6 +32,7 @@ import groupKategoriReducer from "./slices/groupKategori.slice";
 import colorReducer from "./slices/color.slice";
 import priceReducer from "./slices/price.slice";
 import productSlice from "./slices/product.slice";
+import salesSlice from "./slices/sales.slice";
 
 export const makeStore = (extraMiddlewares: any = []) =>
   configureStore({
@@ -64,6 +65,7 @@ export const makeStore = (extraMiddlewares: any = []) =>
       color: colorReducer,
       price: priceReducer,
       product: productSlice,
+      sales: salesSlice,
     },
     middleware: (getDefaultMiddleware) => {
       return getDefaultMiddleware().concat(extraMiddlewares);

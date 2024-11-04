@@ -91,7 +91,6 @@ export const fetchSalesData = createAsyncThunk(
   }
 );
 
-// Modifikasi fetchSalesDataDetail thunk
 export const fetchSalesDataDetail = createAsyncThunk(
   "groupKategori/fetchSalesDataDetail",
   async (
