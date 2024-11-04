@@ -10,6 +10,8 @@ import {
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAppSelector, useAppDispatch } from "@root/libs/store";
+import { setSelectedHam } from "@root/libs/store/slices/selectedSitesSlice";
 
 interface NavItem {
   key: string;
@@ -25,11 +27,16 @@ const navItems: NavItem[] = [];
 
 const Navigation = () => {
   const route = useRouter();
+  const dispatch = useAppDispatch();
+  const selectedHam = useAppSelector((state) => state.selectedSites.ham);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+    const newMenuState = !isMobileMenuOpen;
+    setIsMobileMenuOpen(newMenuState);
+    dispatch(setSelectedHam(newMenuState));
   };
 
   const toggleSubmenu = (key: string) => {
@@ -69,7 +76,9 @@ const Navigation = () => {
   ];
 
   return (
-    <nav className="w-full bg-white border-b border-[#5B5B5B]/25">
+    <nav
+      className={`w-full bg-white border-b border-[#5B5B5B]/25 ${selectedHam ? "flex-col" : "flex-row"}`}
+    >
       <div className="mx-auto px-4">
         <div className="flex justify-between h-16">
           {/* Logo Section */}
@@ -81,9 +90,18 @@ const Navigation = () => {
                 height={40}
                 alt="Logo Header"
               />
-              {/* <CaretDownOutlined className="text-theme-gray" /> */}
             </div>
           </div>
+
+          {/* Hamburger Button for Mobile
+          <div className="lg:hidden flex items-center bg-red-50">
+            <button
+              onClick={toggleMobileMenu}
+              className="text-black focus:outline-none"
+            >
+              <MenuOutlined className="text-xl" />
+            </button>
+          </div> */}
 
           {/* Desktop Navigation */}
           <div className="md:hidden items-center flex-1 px-4">
@@ -92,9 +110,6 @@ const Navigation = () => {
                 <div key={item.key} className="relative group">
                   <button className="flex items-center space-x-1 text-theme-gray hover:text-primary py-2">
                     <span className="text-sm">{item.label}</span>
-                    {/* {item.hasSubmenu && (
-                    //   <CaretDownOutlined className="text-xs" />
-                    )} */}
                   </button>
                   {item.hasSubmenu && (
                     <div className="absolute hidden group-hover:block w-48 bg-white shadow-lg rounded-md mt-1 z-50">
@@ -117,18 +132,6 @@ const Navigation = () => {
           </div>
 
           {/* Right Section - Profile & Settings */}
-          {/* <div className="flex items-center space-x-4">
-            <div className="flex items-center">
-              <SettingOutlined className="text-3xl text-theme-gray rounded-full cursor-pointer" />
-            </div>
-            <Dropdown menu={{ items: profileItems }} placement="bottomRight">
-              <a onClick={(e) => e.preventDefault()}>
-                <Space className="bg-blue-200 rounded-full h-8 w-8 flex items-center justify-center">
-                  <span className="text-blue-600">A</span>
-                </Space>
-              </a>
-            </Dropdown> */}
-
           <div className="lg:hidden flex items-center">
             <Popconfirm
               title="Log Out"
@@ -147,7 +150,7 @@ const Navigation = () => {
 
       {/* Mobile Navigation Menu */}
       {isMobileMenuOpen && (
-        <div className="hidden md-flex">
+        <div className="hidden md:flex">
           <div className="bg-white shadow-lg">
             {navItems.map((item) => (
               <div

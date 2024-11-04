@@ -1,6 +1,7 @@
 "use client";
+import { useAppSelector } from "@root/libs/store";
 import { useRouter, usePathname } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 
 interface ProductLayoutProps {
   children: ReactNode;
@@ -9,6 +10,11 @@ interface ProductLayoutProps {
 const ProductLayout: React.FC<ProductLayoutProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const selectedHam = useAppSelector((state) => state.selectedSites.ham);
+
+  useEffect(() => {
+    console.log(selectedHam);
+  }, [selectedHam]);
 
   const handleMenuClick = (key: string) => {
     router.push(`/product/${key}`);

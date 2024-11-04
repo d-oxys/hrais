@@ -98,9 +98,9 @@ const Card: React.FC<CardProps> = ({ data }) => {
                     ? `${groupSalesPercentage.toFixed(2)}%`
                     : "N/A"}
                 </p>
-                <p>
+                {/* <p>
                   <strong>% of Lost Sales:</strong> {groupLostSalesPercentage}%
-                </p>
+                </p> */}
               </>
             )}
           </div>
@@ -134,10 +134,10 @@ const Card: React.FC<CardProps> = ({ data }) => {
                     ? `${kategoriSalesPercentage.toFixed(2)}%`
                     : "N/A"}
                 </p>
-                <p>
+                {/* <p>
                   <strong>% of Lost Sales:</strong>{" "}
                   {kategoriLostSalesPercentage}%
-                </p>
+                </p> */}
               </>
             )}
           </div>
@@ -171,10 +171,10 @@ const Card: React.FC<CardProps> = ({ data }) => {
                     ? `${subkategoriSalesPercentage.toFixed(2)}%`
                     : "N/A"}
                 </p>
-                <p>
+                {/* <p>
                   <strong>% of Lost Sales:</strong>{" "}
                   {kategoriLostSalesPercentage}%
-                </p>
+                </p> */}
               </>
             )}
           </div>

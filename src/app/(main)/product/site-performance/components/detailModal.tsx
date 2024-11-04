@@ -136,7 +136,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
             <div className="flex items-center mb-2">
               <div className="w-40 font-semibold">Name SKU</div>
               <div className="w-4">:</div>
-              <div className="flex-1">{data.kdbarang}</div>
+              <div className="flex-1">{productsDetail?.sku[0].serial}</div>
             </div>
             <div className="flex items-center mb-2">
               <div className="w-40 font-semibold">Qty of sale</div>
@@ -159,7 +159,8 @@ const DetailModal: React.FC<DetailModalProps> = ({
               <div className="w-40 font-semibold">Best price range</div>
               <div className="w-4">:</div>
               <div className="flex-1">
-                {productsDetail?.bestPrice[0]?.brutto ?? "N/A"}
+                {formatRupiah(productsDetail?.bestPrice[0]?.brutto ?? 0) ||
+                  "N/A"}
               </div>
             </div>
             <div className="flex items-center mb-2">
