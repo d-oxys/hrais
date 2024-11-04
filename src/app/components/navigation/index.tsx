@@ -1,15 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { Dropdown, Space } from "antd";
+import { Dropdown, message, Popconfirm, Space } from "antd";
 import Image from "next/image";
 import {
   CaretDownOutlined,
   MenuOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-
-import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface NavItem {
@@ -37,6 +36,11 @@ const Navigation = () => {
     setExpandedItems((prev) =>
       prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key]
     );
+  };
+
+  const handleLogout = () => {
+    message.info("Logging out...");
+    signOut({ callbackUrl: "/login" });
   };
 
   const profileItems = [
@@ -123,17 +127,21 @@ const Navigation = () => {
                   <span className="text-blue-600">A</span>
                 </Space>
               </a>
-            </Dropdown>
+            </Dropdown> */}
 
-            <div className="lg:hidden flex items-center">
-              <button
-                onClick={toggleMobileMenu}
-                className="text-theme-gray hover:text-primary p-2"
-              >
-                <MenuOutlined className="text-xl" />
+          <div className="lg:hidden flex items-center">
+            <Popconfirm
+              title="Log Out"
+              description="Are you sure you want to log out?"
+              onConfirm={handleLogout}
+              okText="Yes"
+              cancelText="No"
+            >
+              <button className="hover:text-red-500 text-black my-2 font-bold w-auto px-8 rounded-lg">
+                Log Out
               </button>
-            </div>
-          </div> */}
+            </Popconfirm>
+          </div>
         </div>
       </div>
 
