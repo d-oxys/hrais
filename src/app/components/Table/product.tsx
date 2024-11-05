@@ -12,12 +12,14 @@ import {
   Menu,
   TableProps,
   Space,
+  Radio,
 } from "antd";
 import {
   FilterOutlined,
   SearchOutlined,
   DownloadOutlined,
   MenuOutlined,
+  ZoomInOutlined,
 } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import styles from "./product.module.scss";
@@ -44,6 +46,7 @@ interface ProductTableComponentProps extends TableProps<any> {
   onBrandChange?: (value: string) => void;
   onExport?: (fileType: string) => void;
   onFilterClick?: () => void;
+  onSortChange?: (order: "low" | "high") => void;
   expandedRowRender?: (record: any) => React.ReactNode;
   expandable?: any;
   isLoading?: boolean;
@@ -75,6 +78,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   onLimitChange,
   onBrandChange,
   onFilterClick,
+  onSortChange,
   expandable,
   isLoading = false,
   showFilters = true,
@@ -92,6 +96,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
   const [selectedBrand, setSelectedBrand] = useState<string>("All Brands");
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
+  const [sortOrder, setSortOrder] = useState<"low" | "high">("high");
 
   useEffect(() => {
     if (onLimitChange) onLimitChange(limit);
@@ -192,6 +197,12 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
     if (onBrandChange) onBrandChange(brand);
   };
 
+  const handleSortChange = (e: any) => {
+    const order = e.target.value;
+    setSortOrder(order);
+    if (onSortChange) onSortChange(order);
+  };
+
   const renderFilters = () => (
     <div className={styles.filterContainer}>
       <Row gutter={[16, 16]} align="middle">
@@ -213,6 +224,12 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
             <span>entries</span>
           </Space>
         </Col>
+        <Col xs={24} md={8} style={{ display: "flex", alignItems: "center" }}>
+          <Radio.Group onChange={handleSortChange} value={sortOrder}>
+            <Radio value="low">Low to High</Radio>
+            <Radio value="high">High to Low</Radio>
+          </Radio.Group>
+        </Col>
 
         <Col flex="auto">
           <Row gutter={[16, 16]} justify="end" align="middle">
@@ -222,7 +239,32 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                 onChange={handleDateChange}
                 className={styles.datePicker}
                 style={{ width: 280 }}
-                renderExtraFooter={renderQuickSelectButtons}
+                renderExtraFooter={() => (
+                  <div className="my-4">
+                    <div className="flex space-x-2 mt-2">
+                      {dateFilterOptions.slice(0, 6).map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => quickSelect(option.value)}
+                          className="text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline"
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex space-x-2 mt-2">
+                      {dateFilterOptions.slice(6).map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => quickSelect(option.value)}
+                          className="text-blue-500 rounded-sm px-2 py-1 border text-sm bg-blue-100 hover:underline"
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               />
             </Col>
 
@@ -235,7 +277,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                       onClick={() => handleBrandChange("All Brands", "")}
                     >
                       <Space>
-                        <DownloadOutlined />
+                        <ZoomInOutlined />
                         <span>All Brands</span>
                       </Space>
                     </Menu.Item>
@@ -288,7 +330,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
                         style={{ width: 20, height: 20 }}
                       />
                     ) : (
-                      <DownloadOutlined />
+                      <ZoomInOutlined />
                     )}
                     <span>{selectedBrand}</span>
                   </Space>
@@ -308,7 +350,7 @@ const ProductTableComponent: React.FC<ProductTableComponentProps> = ({
 
             <Col>
               <Input
-                placeholder="Search by Name"
+                placeholder="Search by Artikel"
                 prefix={<SearchOutlined />}
                 value={searchText}
                 onChange={handleSearchChange}

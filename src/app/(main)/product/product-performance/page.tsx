@@ -1,12 +1,13 @@
 "use client";
 import React, { Suspense, useEffect, useState } from "react";
-import { Table, TableColumnsType, Modal } from "antd";
+import { Table, TableColumnsType, Modal, Input } from "antd";
 import ProductTableComponent from "@root/app/components/Table/product";
 import {
   InfoCircleOutlined,
   TagOutlined,
   MoneyCollectOutlined,
   PercentageOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import { useAppDispatch, useAppSelector } from "@root/libs/store";
 import { fetchSalesData } from "@root/libs/store/thunk/groupKategori";
@@ -14,53 +15,55 @@ import { SalesData } from "@root/libs/store/slices/groupKategori.slice";
 import FormPermission from "../components/FormPermission";
 import { formatRupiah } from "@root/libs/utils/formatCurrency";
 import dayjs, { Dayjs } from "dayjs";
-import { EyeOutlined } from "@ant-design/icons";
 import TableColorPage from "../components/colorTable";
 import { fetchColorSalesData } from "@root/libs/store/thunk/color";
 import { fetchRangeSalesData } from "@root/libs/store/thunk/range";
+import { fetchProductDetail } from "@root/libs/store/thunk/product";
 
 const ProductPerformancePage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { sales, loading, error } = useAppSelector(
-    (state) => state.groupKategori
-  );
+  const { sales, loading } = useAppSelector((state) => state.groupKategori);
   const { sales: colorSales, loading: colorLoading } = useAppSelector(
     (state) => state.color
   );
   const { sales: priceSales, loading: priceLoading } = useAppSelector(
     (state) => state.price
   );
+  const { productsDetail, loadingDetail, error } = useAppSelector(
+    (state) => state.product
+  );
+
   const [filteredData, setFilteredData] = useState<SalesData[]>([]);
+  const [sortedFilteredData, setSortedFilteredData] = useState<SalesData[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<any>(null);
   const [limit, setLimit] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalData, setTotalData] = useState(0);
   const selectedSites = useAppSelector((state) => state.selectedSites.sites);
+  const [sortOrder, setSortOrder] = useState<"low" | "high">("high");
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [selectedRange, setSelectedRange] = useState<
     [Dayjs | null, Dayjs | null]
   >([null, null]);
 
+  const awal =
+    Array.isArray(selectedRange) && selectedRange[0]
+      ? selectedRange[0].format("YYYY-MM-DD")
+      : "2023-01-01";
+  const akhir =
+    Array.isArray(selectedRange) && selectedRange[1]
+      ? selectedRange[1].format("YYYY-MM-DD")
+      : "2023-12-31";
+
   useEffect(() => {
-    const awal =
-      Array.isArray(selectedRange) &&
-      selectedRange.length > 0 &&
-      selectedRange[0]
-        ? selectedRange[0].format("YYYY-MM-DD")
-        : "2023-01-01";
-    const akhir =
-      Array.isArray(selectedRange) &&
-      selectedRange.length > 1 &&
-      selectedRange[1]
-        ? selectedRange[1].format("YYYY-MM-DD")
-        : "2023-12-31";
     const params = {
       group: "kategori",
       kategori: "all",
       awal,
       akhir,
       limit: 10000,
+      kdtoko: selectedSites,
       brand: selectedBrand,
     };
     const paramsColor = {
@@ -79,14 +82,54 @@ const ProductPerformancePage: React.FC = () => {
     dispatch(fetchColorSalesData(paramsColor));
     dispatch(fetchRangeSalesData(paramsPrice));
     dispatch(fetchSalesData(params));
-  }, [dispatch, selectedRange]);
+  }, [dispatch, selectedRange, selectedBrand, selectedSites]);
 
   useEffect(() => {
     if (sales) {
       setFilteredData(sales);
       setTotalData(sales.length);
+      sortAndSetData(sales, sortOrder);
     }
-  }, [sales]);
+  }, [sales, sortOrder]);
+
+  const sortAndSetData = (data: SalesData[], order: "low" | "high") => {
+    const sortedData = [...data].sort((a, b) => {
+      const percentageA = a.sales_percentage ?? 0;
+      const percentageB = b.sales_percentage ?? 0;
+      return order === "high"
+        ? percentageB - percentageA
+        : percentageA - percentageB;
+    });
+    setSortedFilteredData(sortedData);
+  };
+
+  const handleSearch = (value: string) => {
+    if (sales && Array.isArray(sales)) {
+      const filtered = sales.filter((item) =>
+        item.artikel?.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredData(filtered);
+      setTotalData(filtered.length);
+      setCurrentPage(1);
+      sortAndSetData(filtered, sortOrder);
+    }
+  };
+
+  const handleSortChange = (order: "low" | "high") => {
+    setSortOrder(order);
+    sortAndSetData(filteredData, order);
+  };
+
+  const handleRowClick = () => {
+    dispatch(
+      fetchProductDetail({
+        awal: awal,
+        akhir: akhir,
+        kode_brg: "",
+        kdtoko: [""],
+      })
+    );
+  };
 
   const columns: TableColumnsType<SalesData> = [
     {
@@ -100,289 +143,105 @@ const ProductPerformancePage: React.FC = () => {
             alt="Artikel Image"
             className="w-12 h-12 mr-3 rounded-md"
           />
-          <div className="flex-1">
+          <div>
             <div className="text-base font-semibold">{record.description}</div>
             <div className="text-sm">{record.artikel}</div>
           </div>
         </div>
       ),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#000000",
-        },
-      }),
     },
     {
       title: "Action",
       key: "action",
       render: (text, record) => (
         <div className="flex items-center">
-          <EyeOutlined className="text-gray-500 hover:text-gray-700 cursor-pointer ml-2" />
+          <EyeOutlined
+            className="text-gray-500 hover:text-gray-700 cursor-pointer ml-2"
+            onClick={() => {
+              setSelectedArticle(record);
+              setIsModalVisible(true);
+            }}
+          />
         </div>
       ),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#000000",
-        },
-      }),
     },
-    {
-      title: "Qty",
-      dataIndex: "qty",
-      key: "qty",
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#000000",
-        },
-      }),
-    },
+    { title: "Qty", dataIndex: "qty", key: "qty" },
     {
       title: "Brutto",
       dataIndex: "brutto",
       key: "brutto",
       render: (value) => formatRupiah(value),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#000000",
-        },
-      }),
     },
     {
       title: "Discount",
       dataIndex: "disc",
       key: "discount",
       render: (value) => formatRupiah(value),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#000000",
-        },
-      }),
     },
     {
       title: "Netto",
       dataIndex: "netto",
       key: "netto",
       render: (value) => formatRupiah(value),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#000000",
-        },
-      }),
     },
     {
       title: "% of Sales",
       dataIndex: "sales_percentage",
       key: "sales_percentage",
-      render: (value) => `${value ? value.toFixed(5) : 0}%`,
-      sorter: (a, b) => (a.sales_percentage || 0) - (b.sales_percentage || 0),
-      onHeaderCell: () => ({
-        style: {
-          backgroundColor: "#ffffff",
-          color: "#000000",
-        },
-      }),
+      render: (value) => `${value ? value.toFixed(2) : 0}%`,
     },
   ];
 
-  const handleSearch = (value: string) => {};
-
-  const handleBrandChange = (brand: string) => {
-    setSelectedBrand(brand);
-    const awal =
-      Array.isArray(selectedRange) &&
-      selectedRange.length > 0 &&
-      selectedRange[0]
-        ? selectedRange[0].format("YYYY-MM-DD")
-        : "2023-01-01";
-    const akhir =
-      Array.isArray(selectedRange) &&
-      selectedRange.length > 1 &&
-      selectedRange[1]
-        ? selectedRange[1].format("YYYY-MM-DD")
-        : "2023-12-31";
-    const params = {
-      group: "kategori",
-      kategori: "all",
-      awal,
-      akhir,
-      limit: 10000,
-      brand: brand,
-      kdtoko: selectedSites,
-    };
-    const paramsColor = {
-      awal,
-      akhir,
-      kdtoko: selectedSites,
-      brand: brand,
-    };
-    const paramsPrice = {
-      awal,
-      akhir,
-      kdtoko: selectedSites,
-      brand: brand,
-    };
-
-    dispatch(fetchColorSalesData(paramsColor));
-    dispatch(fetchRangeSalesData(paramsPrice));
-    dispatch(fetchSalesData(params));
-  };
-
-  const handleModalClose = () => {
-    setIsModalVisible(false);
-    setSelectedArticle(null);
-  };
-
-  const handleModalOk = () => {
-    console.log(selectedSites);
-    const awal =
-      Array.isArray(selectedRange) &&
-      selectedRange.length > 0 &&
-      selectedRange[0]
-        ? selectedRange[0].format("YYYY-MM-DD")
-        : "2023-01-01";
-    const akhir =
-      Array.isArray(selectedRange) &&
-      selectedRange.length > 1 &&
-      selectedRange[1]
-        ? selectedRange[1].format("YYYY-MM-DD")
-        : "2023-12-31";
-    const params = {
-      group: "kategori",
-      kategori: "all",
-      awal,
-      akhir,
-      limit: 10000,
-      kdtoko: selectedSites,
-      brand: selectedBrand,
-    };
-
-    const paramsColor = {
-      awal,
-      akhir,
-      kdtoko: selectedSites,
-      limit: 10000,
-      brand: selectedBrand,
-    };
-
-    dispatch(fetchColorSalesData(paramsColor));
-    dispatch(fetchSalesData(params));
-    setIsModalVisible(false);
-  };
-
-  const handleLimitChange = (newLimit: number) => {
-    setLimit(newLimit);
-  };
-
-  const handleDateChange = (dates: [Dayjs | null, Dayjs | null]) => {
-    setSelectedRange(dates);
-  };
-
-  useEffect(() => {
-    if (sales) {
-      setFilteredData(sales);
-      setTotalData(sales.length);
-    }
-  }, [sales]);
-
   const handlePageChange = (page: number, pageSize?: number) => {
     setCurrentPage(page);
-    if (pageSize !== limit) {
-      setLimit(pageSize || 10);
-    }
+    setLimit(pageSize || 10);
   };
 
-  const currentData = filteredData.slice(
+  const currentData = sortedFilteredData.slice(
     (currentPage - 1) * limit,
     currentPage * limit
   );
 
-  const expandedRowRender = (record: SalesData) => {
-    return (
-      <div>
-        <p>
-          <strong>Detail:</strong> {record.description}
-        </p>
-        <p>
-          <strong>Harga:</strong> {record.artikel}
-        </p>
-      </div>
-    );
-  };
-
-  const [expandedRowKeys, setExpandedRowKeys] = useState<React.Key[]>([]);
-
-  const handleExpand = (expanded: boolean, record: SalesData) => {
-    if (expanded) {
-      // Jika baris diklik untuk diperluas, hanya baris ini yang akan ter-expand
-      setExpandedRowKeys([record.artikel]);
-    } else {
-      // Jika baris diklik untuk ditutup, kosongkan expandedRowKeys
-      setExpandedRowKeys([]);
-    }
-  };
-
   return (
     <Suspense>
       <h1 className="text-2xl font-semibold mb-8">
-        {selectedSites.length > 0 ? `Sites: ${selectedSites}` : "All Site"}
+        {selectedSites.length > 0 ? `Sites: ${selectedSites}` : "All Sites"}
       </h1>
 
       <ProductTableComponent
         isLoading={loading}
         columns={columns}
         data={currentData}
-        onFilterClick={handleModalOk}
+        onFilterClick={() => console.log("Filter clicked")}
         onSearch={handleSearch}
-        onDateChange={handleDateChange}
+        onDateChange={setSelectedRange}
         showPagination={true}
-        onLimitChange={handleLimitChange}
-        onBrandChange={handleBrandChange}
+        onLimitChange={(value) => setLimit(value)}
+        onBrandChange={(brand) => setSelectedBrand(brand)}
+        onSortChange={handleSortChange}
         pagination={{
           current: currentPage,
           pageSize: limit,
           total: totalData,
           onChange: handlePageChange,
         }}
-        // expandedRowRender={expandedRowRender}
-        // expandable={{
-        //   expandedRowRender,
-        //   expandedRowKeys: expandedRowKeys,
-        //   onExpand: handleExpand,
-        // }}
         filterContent={<FormPermission />}
       />
+
       <TableColorPage
         colorData={colorSales || []}
         priceData={priceSales || []}
         loading={colorLoading}
         loadingPrice={priceLoading}
         kdtoko={selectedSites}
-        awal={
-          Array.isArray(selectedRange) &&
-          selectedRange.length > 0 &&
-          selectedRange[0]
-            ? selectedRange[0].format("YYYY-MM-DD")
-            : "2023-01-01"
-        } // Kirim nilai awal
-        akhir={
-          Array.isArray(selectedRange) &&
-          selectedRange.length > 1 &&
-          selectedRange[1]
-            ? selectedRange[1].format("YYYY-MM-DD")
-            : "2023-12-31"
-        } // Kirim nilai akhir
+        awal={awal}
+        akhir={akhir}
       />
 
       <Modal
         title="Article Details"
         visible={isModalVisible}
-        onCancel={handleModalClose}
+        onCancel={() => setIsModalVisible(false)}
         footer={null}
       >
         {selectedArticle && (

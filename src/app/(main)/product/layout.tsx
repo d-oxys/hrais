@@ -63,7 +63,7 @@ const ProductLayout: React.FC<ProductLayoutProps> = ({ children }) => {
                       ? "bg-white text-black font-bold"
                       : "text-white"
                   }
-                  rounded-md transition px-6 py-3 text-left hover:bg-gray-700
+                  rounded-md transition px-6 py-3 text-left hover:bg-gray-800
                 `}
                 onClick={() => handleMenuClick(item.key)}
               >
@@ -74,7 +74,7 @@ const ProductLayout: React.FC<ProductLayoutProps> = ({ children }) => {
         </div>
 
         {/* Mobile Version */}
-        <nav className="lg:hidden flex flex-row py-0.5">
+        <nav className="lg:hidden flex flex-row py-0.5 px-0.5 space-x-1">
           {menuItems.map((item) => (
             <button
               key={item.key}
@@ -84,7 +84,7 @@ const ProductLayout: React.FC<ProductLayoutProps> = ({ children }) => {
                     ? "bg-white text-black font-bold"
                     : "text-white"
                 }
-                rounded-md transition px-6 py-3 text-left hover:bg-gray-700
+                rounded-t-sm transition px-6 py-3 text-left hover:bg-white hover:text-black hover:font-bold lg:w-16
               `}
               onClick={() => handleMenuClick(item.key)}
             >

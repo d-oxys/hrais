@@ -144,7 +144,9 @@ const DetailModal: React.FC<DetailModalProps> = ({
               <div className="flex-1">{data.qty}</div>
             </div>
             <div className="flex items-center mb-2">
-              <div className="w-40 font-semibold">% of sale</div>
+              <div className="w-40 font-semibold">
+                % of sale On Site {data.kdtoko}{" "}
+              </div>
               <div className="w-4">:</div>
               <div className="flex-1">{data.sales_percentage}%</div>
             </div>
@@ -156,7 +158,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
               <div className="flex-1">{data.kdtoko}</div>
             </div>
             <div className="flex items-center mb-2">
-              <div className="w-40 font-semibold">Best price range</div>
+              <div className="w-40 font-semibold">Best price </div>
               <div className="w-4">:</div>
               <div className="flex-1">
                 {formatRupiah(productsDetail?.bestPrice[0]?.brutto ?? 0) ||
@@ -181,9 +183,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
           dataSource={colorData}
           pagination={false}
           bordered
-          title={() => (
-            <strong>Table 1: Color Sales in SKU {data.kdbarang}</strong>
-          )}
+          title={() => <strong>Color List in SKU {data.kdbarang}</strong>}
         />
         <Table
           columns={table2Columns}
@@ -192,7 +192,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
           pagination={false}
           bordered
           title={() => (
-            <strong>Table 2: Price Range Sales in SKU {data.kdbarang}</strong>
+            <strong>Price Range Sales in SKU {data.kdbarang}</strong>
           )}
         />
       </div>

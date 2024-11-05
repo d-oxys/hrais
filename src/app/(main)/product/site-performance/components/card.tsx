@@ -76,7 +76,7 @@ const Card: React.FC<CardProps> = ({ data }) => {
         <div className="border border-gray-300 rounded-lg overflow-hidden">
           <div className="bg-[#394049] text-white text-center py-2">
             <h3 className="font-semibold text-lg">
-              {productsDetail?.sku[0].group}
+              Group: {productsDetail?.sku[0].group}
             </h3>
           </div>
           <div className="p-4">
@@ -112,7 +112,7 @@ const Card: React.FC<CardProps> = ({ data }) => {
         <div className="border border-gray-300 rounded-lg overflow-hidden">
           <div className="bg-[#394049] text-white text-center py-2">
             <h3 className="font-semibold text-lg">
-              {productsDetail?.sku[0]?.kategori}
+              Category: {productsDetail?.sku[0]?.kategori}
             </h3>
           </div>
           <div className="p-4">
@@ -149,7 +149,7 @@ const Card: React.FC<CardProps> = ({ data }) => {
         <div className="border border-gray-300 rounded-lg overflow-hidden">
           <div className="bg-[#394049] text-white text-center py-2">
             <h3 className="font-semibold text-lg">
-              {productsDetail?.sku[0]?.sub_kategori}
+              Sub Category: {productsDetail?.sku[0]?.sub_kategori}
             </h3>
           </div>
           <div className="p-4">
