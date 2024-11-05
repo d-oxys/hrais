@@ -183,6 +183,7 @@ const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({
                     dataIndex: "qty",
                     key: "qty",
                     width: 200,
+                    sorter: (a, b) => a.qty - b.qty,
                   },
                   {
                     title: "Brutto",
@@ -215,7 +216,7 @@ const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({
                 ]}
                 rowKey="qty"
                 pagination={false}
-                showHeader={false}
+                showHeader={true}
               />
             );
           },
