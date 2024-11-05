@@ -1,6 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axios, { AxiosError } from 'axios';
-import { AppDispatch } from '..';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import axios, { AxiosError } from "axios";
+import { AppDispatch } from "..";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -89,6 +89,7 @@ interface FetchProductsParams {
 interface ProductState {
   products: any[];
   productsDetail: ProductDetail | null;
+  productsDetailHargaBySite: BestPriceDetail[] | null;
   loading: boolean;
   loadingDetail: boolean;
   error: unknown;
@@ -103,6 +104,7 @@ interface ProductAttentionState {
 const initialState: ProductState & ProductAttentionState = {
   products: [],
   productsDetail: null,
+  productsDetailHargaBySite: null,
   loading: false,
   loadingDetail: false,
   error: null,
@@ -112,7 +114,7 @@ const initialState: ProductState & ProductAttentionState = {
 };
 
 const productSlice = createSlice({
-  name: 'product',
+  name: "product",
   initialState,
   reducers: {
     setLoading(state, action: PayloadAction<boolean>) {
@@ -130,6 +132,13 @@ const productSlice = createSlice({
     setProductsDetail(state, action: PayloadAction<ProductDetail | null>) {
       state.productsDetail = action.payload;
     },
+    setDetailHargaBySite: (
+      state,
+      action: PayloadAction<BestPriceDetail[] | null>
+    ) => {
+      state.productsDetailHargaBySite = action.payload;
+    },
+
     setAttentionLoading(state, action: PayloadAction<boolean>) {
       state.attentionLoading = action.payload;
     },
