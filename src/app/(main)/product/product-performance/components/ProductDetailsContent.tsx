@@ -132,7 +132,7 @@ const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({ loadingDe
         pagination={false}
         scroll={{ y: 500 }}
         expandable={{
-          expandedRowRender: () => <ExpandedTable dataSource={sortedExpandedData} />,
+          expandedRowRender: () => <ExpandedTable dataSource={sortedExpandedData.slice(0, 10)} />,
           onExpand: handleRowExpand,
           expandedRowKeys: expandedRowKey ? [expandedRowKey] : [],
         }}
