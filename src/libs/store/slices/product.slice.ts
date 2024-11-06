@@ -89,6 +89,7 @@ interface FetchProductsParams {
 interface ProductState {
   products: any[];
   productsDetail: ProductDetail | null;
+  productsDetailHargaBySite: BestPriceDetail[] | null;
   loading: boolean;
   loadingDetail: boolean;
   error: unknown;
@@ -103,6 +104,7 @@ interface ProductAttentionState {
 const initialState: ProductState & ProductAttentionState = {
   products: [],
   productsDetail: null,
+  productsDetailHargaBySite: null,
   loading: false,
   loadingDetail: false,
   error: null,
@@ -129,6 +131,12 @@ const productSlice = createSlice({
     },
     setProductsDetail(state, action: PayloadAction<ProductDetail | null>) {
       state.productsDetail = action.payload;
+    },
+    setDetailHargaBySite(state, action: PayloadAction<BestPriceDetail[] | null>) {
+      state.productsDetailHargaBySite = action.payload;
+    },
+    clearDetailHargaBySite(state) {
+      state.productsDetailHargaBySite = null;
     },
     setAttentionLoading(state, action: PayloadAction<boolean>) {
       state.attentionLoading = action.payload;

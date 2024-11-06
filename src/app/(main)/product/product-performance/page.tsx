@@ -1,6 +1,6 @@
 "use client";
 import React, { Suspense, useEffect, useState } from "react";
-import { Table, TableColumnsType, Modal, Input } from "antd";
+import { Table, TableColumnsType, Modal, Input, Radio } from "antd";
 import ProductTableComponent from "@root/app/components/Table/product";
 import {
   InfoCircleOutlined,
@@ -19,6 +19,7 @@ import TableColorPage from "../components/colorTable";
 import { fetchColorSalesData } from "@root/libs/store/thunk/color";
 import { fetchRangeSalesData } from "@root/libs/store/thunk/range";
 import { fetchProductDetail } from "@root/libs/store/thunk/product";
+import ProductDetailsContent from "./components/ProductDetailsContent";
 
 const ProductPerformancePage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -32,7 +33,9 @@ const ProductPerformancePage: React.FC = () => {
   const { productsDetail, loadingDetail, error } = useAppSelector(
     (state) => state.product
   );
-
+  const [selectedRowData, setSelectedRowData] = useState<SalesData | null>(
+    null
+  );
   const [filteredData, setFilteredData] = useState<SalesData[]>([]);
   const [sortedFilteredData, setSortedFilteredData] = useState<SalesData[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -42,6 +45,7 @@ const ProductPerformancePage: React.FC = () => {
   const [totalData, setTotalData] = useState(0);
   const selectedSites = useAppSelector((state) => state.selectedSites.sites);
   const [sortOrder, setSortOrder] = useState<"low" | "high">("high");
+  const [sortOrderToko, setOrderSortToko] = useState<"low" | "high">("high");
   const [selectedBrand, setSelectedBrand] = useState<string>("");
   const [selectedRange, setSelectedRange] = useState<
     [Dayjs | null, Dayjs | null]
@@ -120,13 +124,22 @@ const ProductPerformancePage: React.FC = () => {
     sortAndSetData(filteredData, order);
   };
 
-  const handleRowClick = () => {
+  const sortedBestToko = [...(productsDetail?.bestToko || [])].sort((a, b) =>
+    sortOrderToko === "high" ? b.qty - a.qty : a.qty - b.qty
+  );
+
+  const handleSortTokoChange = (e: any) => {
+    setOrderSortToko(e.target.value);
+  };
+
+  const handleRowClick = (artikel: string, record: SalesData) => {
+    setSelectedRowData(record);
     dispatch(
       fetchProductDetail({
         awal: awal,
         akhir: akhir,
-        kode_brg: "",
-        kdtoko: [""],
+        kode_brg: artikel,
+        kdtoko: selectedSites,
       })
     );
   };
@@ -159,6 +172,7 @@ const ProductPerformancePage: React.FC = () => {
             className="text-gray-500 hover:text-gray-700 cursor-pointer ml-2"
             onClick={() => {
               setSelectedArticle(record);
+              handleRowClick(record.artikel, record);
               setIsModalVisible(true);
             }}
           />
@@ -239,38 +253,22 @@ const ProductPerformancePage: React.FC = () => {
       />
 
       <Modal
-        title="Article Details"
+        title="Product Details"
         visible={isModalVisible}
         onCancel={() => setIsModalVisible(false)}
         footer={null}
+        width="70%"
       >
-        {selectedArticle && (
-          <div>
-            <p>
-              <InfoCircleOutlined /> <strong>Artikel:</strong>{" "}
-              {selectedArticle.kategori}
-            </p>
-            <p>
-              <TagOutlined /> <strong>Qty:</strong> {selectedArticle.qty}
-            </p>
-            <p>
-              <MoneyCollectOutlined /> <strong>Brutto:</strong>{" "}
-              {formatRupiah(selectedArticle.brutto)}
-            </p>
-            <p>
-              <TagOutlined /> <strong>Discount:</strong>{" "}
-              {formatRupiah(selectedArticle.disc)}
-            </p>
-            <p>
-              <MoneyCollectOutlined /> <strong>Netto:</strong>{" "}
-              {formatRupiah(selectedArticle.netto)}
-            </p>
-            <p>
-              <PercentageOutlined /> <strong>% of Sales:</strong>{" "}
-              {selectedArticle.sales_percentage}%
-            </p>
-          </div>
-        )}
+        <ProductDetailsContent
+          loadingDetail={loadingDetail}
+          productsDetail={productsDetail}
+          selectedRowData={selectedRowData}
+          sortOrderToko={sortOrderToko}
+          sortedBestToko={sortedBestToko}
+          handleSortTokoChange={handleSortTokoChange}
+          awal={awal}
+          akhir={akhir}
+        />
       </Modal>
     </Suspense>
   );

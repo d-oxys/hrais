@@ -17,6 +17,7 @@ const Card: React.FC<CardProps> = ({ data }) => {
   const { productsDetail, loadingDetail } = useAppSelector(
     (state) => state.product
   );
+
   const {
     salesDataGroup,
     salesDataKategori,

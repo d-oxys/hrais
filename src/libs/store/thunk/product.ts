@@ -54,8 +54,18 @@ export const fetchProductDetail = createAsyncThunk('product/fetchProductDetail',
 
   try {
     const { awal, akhir, kode_brg, kdtoko } = params;
-    const response = await axios.get(`${API_URL}/api/sales/product/site/kategori/all/detail`, { params: { awal, akhir, kode_brg, kdtoko } });
-    console.log(response.data);
+    const kdtokoString = Array.isArray(kdtoko) ? kdtoko.join(',') : kdtoko;
+
+    const response = await axios.get(`${API_URL}/api/sales/product/site/kategori/all/detail`, {
+      params: {
+        awal,
+        akhir,
+        kode_brg,
+        kdtoko: kdtokoString,
+      },
+    });
+
+    // console.log(response.data);
     dispatch(productActions.setProductsDetail(response.data));
   } catch (err: unknown) {
     if (err instanceof AxiosError) {
@@ -65,6 +75,35 @@ export const fetchProductDetail = createAsyncThunk('product/fetchProductDetail',
     }
   } finally {
     dispatch(productActions.setLoadingDetail(false));
+  }
+});
+
+export const fetchDetailPriceBySite = createAsyncThunk('product/fetchDetailPriceBySite', async (params: FetchProductsParams, { dispatch, rejectWithValue }) => {
+  dispatch(productActions.setAttentionLoading(true));
+  dispatch(productActions.setError(null));
+
+  try {
+    const { awal, akhir, kode_brg, kdtoko } = params;
+    const kdtokoString = Array.isArray(kdtoko) ? kdtoko.join(',') : kdtoko;
+
+    const response = await axios.get(`${API_URL}/api/sales/product/site/kategori/all/detail`, {
+      params: {
+        awal,
+        akhir,
+        kode_brg,
+        kdtoko: kdtokoString,
+      },
+    });
+
+    dispatch(productActions.setDetailHargaBySite(response.data.bestPrice));
+  } catch (err: unknown) {
+    if (err instanceof AxiosError) {
+      return rejectWithValue(err.response?.data?.message || 'An error occurred');
+    } else {
+      return rejectWithValue('An unexpected error occurred');
+    }
+  } finally {
+    dispatch(productActions.setAttentionLoading(false));
   }
 });
 
