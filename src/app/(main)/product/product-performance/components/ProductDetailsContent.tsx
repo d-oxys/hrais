@@ -1,28 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import { Radio, Table } from 'antd';
-import { useAppDispatch, useAppSelector } from '@root/libs/store';
-import { productActions } from '@root/libs/store/slices/product.slice';
-import { fetchDetailPriceBySite } from '@root/libs/store/thunk/product';
-import { formatRupiah } from '@root/libs/utils/formatCurrency';
-import ExpandedTable from './ExpandedTable';
+import React, { useEffect, useState } from "react";
+import { Radio, Table } from "antd";
+import { useAppDispatch, useAppSelector } from "@root/libs/store";
+import { productActions } from "@root/libs/store/slices/product.slice";
+import { fetchDetailPriceBySite } from "@root/libs/store/thunk/product";
+import { formatRupiah } from "@root/libs/utils/formatCurrency";
+import ExpandedTable from "./ExpandedTable";
 
 interface ProductDetailsContentProps {
   loadingDetail: boolean;
   productsDetail: any;
   selectedRowData: any;
-  sortOrderToko: 'high' | 'low';
+  sortOrderToko: "high" | "low";
   sortedBestToko: any[];
   handleSortTokoChange: (e: any) => void;
   awal: string;
   akhir: string;
 }
 
-const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({ loadingDetail, productsDetail, selectedRowData, sortOrderToko, sortedBestToko, handleSortTokoChange, awal, akhir }) => {
+const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({
+  loadingDetail,
+  productsDetail,
+  selectedRowData,
+  sortOrderToko,
+  sortedBestToko,
+  handleSortTokoChange,
+  awal,
+  akhir,
+}) => {
   const dispatch = useAppDispatch();
-  const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(null);
-  const { productsDetailHargaBySite, attentionLoading } = useAppSelector((state) => state.product);
+  const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | null>(null);
+  const { productsDetailHargaBySite, attentionLoading } = useAppSelector(
+    (state) => state.product
+  );
   const [expandedRowKey, setExpandedRowKey] = useState<string | null>(null);
-  const [sortedExpandedData, setSortedExpandedData] = useState(productsDetailHargaBySite || []);
+  const [sortedExpandedData, setSortedExpandedData] = useState(
+    productsDetailHargaBySite || []
+  );
 
   const handleRowExpand = (expanded: boolean, record: any) => {
     if (expanded) {
@@ -42,11 +55,11 @@ const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({ loadingDe
   };
 
   // Sorting function to update the sorted data for ExpandedTable
-  const handleSortExpandData = (sortOrder: 'ascend' | 'descend' | null) => {
+  const handleSortExpandData = (sortOrder: "ascend" | "descend" | null) => {
     const sortedData = [...(productsDetailHargaBySite || [])].sort((a, b) => {
-      if (sortOrder === 'ascend') {
+      if (sortOrder === "ascend") {
         return a.qty - b.qty;
-      } else if (sortOrder === 'descend') {
+      } else if (sortOrder === "descend") {
         return b.qty - a.qty;
       }
       return 0;
@@ -70,60 +83,102 @@ const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({ loadingDe
   }
 
   return (
-    <div className='max-h-[80vh] overflow-auto'>
-      <div className='grid grid-cols-2 gap-4 bg-[#394049] p-4 rounded-md text-white mb-8'>{/* Tampilkan informasi produk */}</div>
-
-      {/* Main Table with sorting button in Quantity column */}
+    <div className="max-h-[80vh] overflow-auto">
+      <div className="grid grid-cols-2 gap-4 bg-[#394049] p-4 rounded-md text-white mb-8">
+        <div>
+          <div className="flex items-center mb-2">
+            <div className="w-40 font-semibold">Name SKU</div>
+            <div className="w-4">:</div>
+            <div className="flex-1">{productsDetail?.sku[0].serial}</div>
+          </div>
+          <div className="flex items-center mb-2">
+            <div className="w-40 font-semibold">Qty of sale</div>
+            <div className="w-4">:</div>
+            <div className="flex-1">{selectedRowData?.qty ?? "N/A"}</div>
+          </div>
+          <div className="flex items-center mb-2">
+            <div className="w-40 font-semibold">% of sale</div>
+            <div className="w-4">:</div>
+            <div className="flex-1">
+              {selectedRowData?.sales_percentage ?? "N/A"}%
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center mb-2">
+            <div className="w-40 font-semibold">Tanggal</div>
+            <div className="w-4">:</div>
+            <div className="flex-1">
+              {awal} - {akhir}
+            </div>
+          </div>
+          <div className="flex items-center mb-2">
+            <div className="w-40 font-semibold">Best price</div>
+            <div className="w-4">:</div>
+            <div className="flex-1">
+              {formatRupiah(productsDetail?.bestPrice[0]?.brutto ?? 0) || "N/A"}
+            </div>
+          </div>
+          <div className="flex items-center mb-2">
+            <div className="w-40 font-semibold">Best Color</div>
+            <div className="w-4">:</div>
+            <div className="flex-1">
+              {productsDetail?.bestColor[0]?.color ?? "N/A"}
+            </div>
+          </div>
+        </div>
+      </div>
       <Table
         dataSource={sortedBestToko}
         loading={attentionLoading}
         columns={[
           {
-            title: 'Store Code',
-            dataIndex: 'kdtoko',
-            key: 'kdtoko',
+            title: "Store Code",
+            dataIndex: "kdtoko",
+            key: "kdtoko",
             width: 200,
           },
           {
-            title: 'Quantity',
-            dataIndex: 'qty',
-            key: 'qty',
+            title: "Quantity",
+            dataIndex: "qty",
+            key: "qty",
             width: 200,
             sorter: true, // Enable sorting in main table
             sortOrder: sortOrder, // Control sort order from state
             onHeaderCell: () => ({
               onClick: () => {
-                const newSortOrder = sortOrder === 'ascend' ? 'descend' : 'ascend';
+                const newSortOrder =
+                  sortOrder === "ascend" ? "descend" : "ascend";
                 setSortOrder(newSortOrder);
                 handleSortExpandData(newSortOrder); // Apply sort to ExpandedTable data
               },
             }),
           },
           {
-            title: 'Brutto',
-            dataIndex: 'brutto',
-            key: 'brutto',
+            title: "Brutto",
+            dataIndex: "brutto",
+            key: "brutto",
             width: 200,
             render: (value) => formatRupiah(value),
           },
           {
-            title: 'Discount',
-            dataIndex: 'disc',
-            key: 'disc',
+            title: "Discount",
+            dataIndex: "disc",
+            key: "disc",
             width: 200,
             render: (value) => formatRupiah(value),
           },
           {
-            title: 'Netto',
-            dataIndex: 'netto',
-            key: 'netto',
+            title: "Netto",
+            dataIndex: "netto",
+            key: "netto",
             width: 200,
             render: (value) => formatRupiah(value),
           },
           {
-            title: '% of Sales',
-            dataIndex: 'sales_percentage',
-            key: 'sales_percentage',
+            title: "% of Sales",
+            dataIndex: "sales_percentage",
+            key: "sales_percentage",
             width: 200,
             render: (value) => `${value}%`,
           },
@@ -132,7 +187,9 @@ const ProductDetailsContent: React.FC<ProductDetailsContentProps> = ({ loadingDe
         pagination={false}
         scroll={{ y: 500 }}
         expandable={{
-          expandedRowRender: () => <ExpandedTable dataSource={sortedExpandedData.slice(0, 10)} />,
+          expandedRowRender: () => (
+            <ExpandedTable dataSource={sortedExpandedData.slice(0, 10)} />
+          ),
           onExpand: handleRowExpand,
           expandedRowKeys: expandedRowKey ? [expandedRowKey] : [],
         }}
