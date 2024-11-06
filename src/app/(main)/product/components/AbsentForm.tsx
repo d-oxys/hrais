@@ -10,23 +10,17 @@ import _ from "lodash";
 const AbsentForm = () => {
   const dispatch = useAppDispatch();
   const [selectedChannels, setSelectedChannels] = useState<string[]>([]);
-  const [selectedSitesState, setSelectedSitesState] = useState<string[]>([]);
+  const [selectedSites, setSelectedSitesState] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const { sitedata, loading } = useAppSelector((state) => state.rasiteGroup);
-  const selectedSites = useAppSelector((state) => state.selectedSites.sites);
   const [subChannels, setSubChannels] = useState<any[]>([]);
 
+  // Channel Options
   const channelOptions = ["OS", "ECOMM"];
 
   useEffect(() => {
     dispatch(getSiteData());
   }, [dispatch]);
-
-  useEffect(() => {
-    if (selectedSites.length > 0) {
-      setSelectedSitesState(selectedSites);
-    }
-  }, [selectedSites]);
 
   const handleChannelChange = (checkedValues: string[]) => {
     setSelectedChannels(checkedValues);
@@ -107,7 +101,7 @@ const AbsentForm = () => {
             subChannels.length > 0 && (
               <Checkbox.Group
                 onChange={handleSiteChange}
-                value={selectedSitesState}
+                value={selectedSites}
                 className="w-full"
               >
                 <Row gutter={[16, 16]} className="w-full">

@@ -78,7 +78,6 @@ const GrooupPerformancePage: React.FC = () => {
       awal,
       akhir,
       limit: 1000,
-      kdtoko: selectedSites,
       brand: selectedBrand,
     };
 

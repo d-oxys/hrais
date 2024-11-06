@@ -66,7 +66,6 @@ const SubKategoriPerformancePage: React.FC = () => {
       awal,
       akhir,
       limit: 1000,
-      kdtoko: selectedSites,
       brand: selectedBrand,
     };
 
